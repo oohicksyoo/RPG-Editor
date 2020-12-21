@@ -29,7 +29,8 @@ struct MainMenuBarWindow::Internal {
 			}
 
 			if (ImGui::BeginMenu("Windows")) {
-				if (ImGui::MenuItem("Scene")) {}
+				if (ImGui::MenuItem("Scene",0, true)) {}
+				if (ImGui::MenuItem("Game", 0, true)) {}
 				ImGui::EndMenu();
 			}
 
