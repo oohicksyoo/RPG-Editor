@@ -10,7 +10,7 @@ struct GameWindow::Internal {
 
 	bool isOpened;
 
-	Internal(bool value) : isOpened(value) {}
+	Internal() : isOpened(true) {}
 
 	void Render(ImGuiID dockID) {
 		if (!isOpened) return;
@@ -24,7 +24,7 @@ struct GameWindow::Internal {
 	}
 };
 
-GameWindow::GameWindow(bool isOpened) : internal(RPG::MakeInternalPointer<Internal>(isOpened)) {}
+GameWindow::GameWindow() : internal(RPG::MakeInternalPointer<Internal>()) {}
 
 void GameWindow::Render(ImGuiID dockID) {
 	internal->Render(dockID);

@@ -11,7 +11,7 @@
 namespace RPG {
 	struct GameWindow : public IEditorWindow {
 		public:
-			GameWindow(bool isOpened);
+			GameWindow();
 			void Render(ImGuiID dockID) override;
 			RPG::Action<>::Callback ToggleIsOpen() override;
 			RPG::Action<>::Func<bool> IsOpen() override;

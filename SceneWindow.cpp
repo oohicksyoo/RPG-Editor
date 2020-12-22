@@ -10,7 +10,7 @@ struct SceneWindow::Internal {
 
 	bool isOpened;
 
-	Internal(bool value) : isOpened(value) {}
+	Internal() : isOpened(true) {}
 
 	void Render(ImGuiID dockID) {
 		if (!isOpened) return;
@@ -24,7 +24,7 @@ struct SceneWindow::Internal {
 	}
 };
 
-SceneWindow::SceneWindow(bool isOpened) : internal(RPG::MakeInternalPointer<Internal>(isOpened)) {}
+SceneWindow::SceneWindow() : internal(RPG::MakeInternalPointer<Internal>()) {}
 
 void SceneWindow::Render(ImGuiID dockID) {
 	internal->Render(dockID);

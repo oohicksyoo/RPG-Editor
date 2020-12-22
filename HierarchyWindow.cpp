@@ -9,7 +9,7 @@ using RPG::HierarchyWindow;
 struct HierarchyWindow::Internal {
 	bool isOpened;
 
-	Internal(bool value) : isOpened(value) {}
+	Internal() : isOpened(true) {}
 
 	void Render(ImGuiID dockID) {
 		if (!isOpened) return;
@@ -23,7 +23,7 @@ struct HierarchyWindow::Internal {
 	}
 };
 
-HierarchyWindow::HierarchyWindow(bool isOpened) : internal(RPG::MakeInternalPointer<Internal>(isOpened)) {}
+HierarchyWindow::HierarchyWindow() : internal(RPG::MakeInternalPointer<Internal>()) {}
 
 void HierarchyWindow::Render(ImGuiID dockID) {
 	internal->Render(dockID);

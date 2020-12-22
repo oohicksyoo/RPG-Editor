@@ -12,7 +12,7 @@
 namespace RPG {
 	struct SceneWindow : public IEditorWindow {
 		public:
-			SceneWindow(bool isOpened);
+			SceneWindow();
 			void Render(ImGuiID dockID) override;
 			RPG::Action<>::Callback ToggleIsOpen() override;
 			RPG::Action<>::Func<bool> IsOpen() override;

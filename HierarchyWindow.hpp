@@ -11,7 +11,7 @@
 namespace RPG {
 	struct HierarchyWindow : public IEditorWindow {
 		public:
-			HierarchyWindow(bool isOpened);
+			HierarchyWindow();
 			void Render(ImGuiID dockID) override;
 			RPG::Action<>::Callback ToggleIsOpen() override;
 			RPG::Action<>::Func<bool> IsOpen() override;

@@ -55,9 +55,9 @@ struct EditorManager::Internal {
 		ImGui_ImplOpenGL3_Init(glslVersion);
 
 		//Setup Base windows
-		std::unique_ptr<RPG::SceneWindow> sceneWindow = std::make_unique<RPG::SceneWindow>(true);
-		std::unique_ptr<RPG::GameWindow> gameWindow = std::make_unique<RPG::GameWindow>(true);
-		std::unique_ptr<RPG::HierarchyWindow> hierarchyWindow = std::make_unique<RPG::HierarchyWindow>(true);
+		std::unique_ptr<RPG::SceneWindow> sceneWindow = std::make_unique<RPG::SceneWindow>();
+		std::unique_ptr<RPG::GameWindow> gameWindow = std::make_unique<RPG::GameWindow>();
+		std::unique_ptr<RPG::HierarchyWindow> hierarchyWindow = std::make_unique<RPG::HierarchyWindow>();
 
 		mainMenuBarWindow = std::make_unique<RPG::MainMenuBarWindow>();
 		mainMenuBarWindow->AddToggleableEditorWindow({"Scene", sceneWindow->ToggleIsOpen(), sceneWindow->IsOpen()});
