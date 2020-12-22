@@ -1,5 +1,5 @@
 //
-// Created by Alex on 12/20/2020.
+// Created by Alex on 12/22/2020.
 //
 
 #pragma once
@@ -9,9 +9,9 @@
 #include "../engine/core/InternalPointer.hpp"
 
 namespace RPG {
-	struct GameWindow : public IEditorWindow {
+	struct HierarchyWindow : public IEditorWindow {
 		public:
-			GameWindow(bool isOpened);
+			HierarchyWindow(bool isOpened);
 			void Render(ImGuiID dockID) override;
 			RPG::Action<>::Callback ToggleIsOpen() override;
 			RPG::Action<>::Func<bool> IsOpen() override;

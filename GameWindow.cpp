@@ -29,3 +29,15 @@ GameWindow::GameWindow(bool isOpened) : internal(RPG::MakeInternalPointer<Intern
 void GameWindow::Render(ImGuiID dockID) {
 	internal->Render(dockID);
 }
+
+RPG::Action<>::Callback GameWindow::ToggleIsOpen() {
+	return [this] () {
+		internal->isOpened = !internal->isOpened;
+	};
+}
+
+RPG::Action<>::Func<bool> GameWindow::IsOpen() {
+	return [this] () -> bool {
+		return internal->isOpened;
+	};
+}

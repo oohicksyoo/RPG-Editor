@@ -4,22 +4,17 @@
 
 #include "MainMenuBarWindow.hpp"
 #include "../engine/core/Log.hpp"
-#include "../engine/core/Action.hpp"
+#include <vector>
 
 using RPG::MainMenuBarWindow;
 
 struct MainMenuBarWindow::Internal {
 
-	RPG::Action<> sceneOnToggleAction = {};
-	RPG::Action<>::Callback firstFunc = [this]() {FirstFunc();};
+	std::vector<RPG::MainMenuBarEditorWindowToggle> editorWindowToggles;
+	//RPG::Action<> sceneToggleAction = {};
+	//RPG::Action<>::Func<bool> sceneIsOpenedCallback = {};
 
-	Internal() {
-		sceneOnToggleAction += []() {
-			RPG::Log("Main Menu Bar Window", "Scene Toggle");
-		};
-		sceneOnToggleAction += firstFunc;
-		sceneOnToggleAction += [this]() {SecondFunc();};
-	}
+	Internal() {}
 
 	void Render(ImGuiID dockID) {
 		if (ImGui::BeginMainMenuBar()) {
@@ -40,13 +35,11 @@ struct MainMenuBarWindow::Internal {
 			}
 
 			if (ImGui::BeginMenu("Windows")) {
-				if (ImGui::MenuItem("Scene",0, true)) {
-					if (sceneOnToggleAction.GetListenerCount() > 0) {
-						sceneOnToggleAction.Invoke();
-						sceneOnToggleAction -= firstFunc;
+				for(auto editorWindowToggle : editorWindowToggles) {
+					if (ImGui::MenuItem(editorWindowToggle.windowName.c_str(), 0, editorWindowToggle.onIsOpenFunc())) {
+						editorWindowToggle.onToggleAction();
 					}
 				}
-				if (ImGui::MenuItem("Game", 0, true)) {}
 				ImGui::EndMenu();
 			}
 
@@ -54,21 +47,37 @@ struct MainMenuBarWindow::Internal {
 		}
 	}
 
-	void FirstFunc() {
-		RPG::Log("Main Menu Bar Window", "First Func");
+	bool IsOpened() {
+		return true;
 	}
 
-	void SecondFunc() {
-		RPG::Log("Main Menu Bar Window", "Second Func");
-	}
-
-	void ThirdFunc() {
-		RPG::Log("Main Menu Bar Window", "Third Func");
-	}
+	void SetOpenState(bool value) {}
 };
 
 MainMenuBarWindow::MainMenuBarWindow() : internal(RPG::MakeInternalPointer<Internal>()) {}
 
 void MainMenuBarWindow::Render(ImGuiID dockID) {
 	internal->Render(dockID);
+}
+
+RPG::Action<>::Callback MainMenuBarWindow::ToggleIsOpen() {
+	return [this] () {};
+}
+
+RPG::Action<>::Func<bool> MainMenuBarWindow::IsOpen() {
+	return [this] () -> bool {
+		return true;
+	};
+}
+
+void MainMenuBarWindow::SceneToggleAction(RPG::Action<>::Callback callback) {
+	//internal->sceneToggleAction += callback;
+}
+
+void MainMenuBarWindow::SceneIsOpened(RPG::Action<>::Func<bool> callback) {
+	//internal->sceneIsOpenedCallback = callback;
+}
+
+void MainMenuBarWindow::AddToggleableEditorWindow(RPG::MainMenuBarEditorWindowToggle editorWindow) {
+	internal->editorWindowToggles.push_back(editorWindow);
 }
