@@ -3,12 +3,23 @@
 //
 
 #include "MainMenuBarWindow.hpp"
+#include "../engine/core/Log.hpp"
+#include "../engine/core/Action.hpp"
 
 using RPG::MainMenuBarWindow;
 
 struct MainMenuBarWindow::Internal {
 
-	Internal() {}
+	RPG::Action<> sceneOnToggleAction = {};
+	RPG::Action<>::Callback firstFunc = [this]() {FirstFunc();};
+
+	Internal() {
+		sceneOnToggleAction += []() {
+			RPG::Log("Main Menu Bar Window", "Scene Toggle");
+		};
+		sceneOnToggleAction += firstFunc;
+		sceneOnToggleAction += [this]() {SecondFunc();};
+	}
 
 	void Render(ImGuiID dockID) {
 		if (ImGui::BeginMainMenuBar()) {
@@ -29,13 +40,30 @@ struct MainMenuBarWindow::Internal {
 			}
 
 			if (ImGui::BeginMenu("Windows")) {
-				if (ImGui::MenuItem("Scene",0, true)) {}
+				if (ImGui::MenuItem("Scene",0, true)) {
+					if (sceneOnToggleAction.GetListenerCount() > 0) {
+						sceneOnToggleAction.Invoke();
+						sceneOnToggleAction -= firstFunc;
+					}
+				}
 				if (ImGui::MenuItem("Game", 0, true)) {}
 				ImGui::EndMenu();
 			}
 
 			ImGui::EndMainMenuBar();
 		}
+	}
+
+	void FirstFunc() {
+		RPG::Log("Main Menu Bar Window", "First Func");
+	}
+
+	void SecondFunc() {
+		RPG::Log("Main Menu Bar Window", "Second Func");
+	}
+
+	void ThirdFunc() {
+		RPG::Log("Main Menu Bar Window", "Third Func");
 	}
 };
 
