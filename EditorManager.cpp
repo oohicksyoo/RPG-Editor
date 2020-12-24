@@ -50,7 +50,7 @@ struct EditorManager::Internal {
 		//Style
 		SetupStyling();
 
-		//Setup Platform/Renderer Bindings
+		//Setup Platform/IRenderer Bindings
 		ImGui_ImplSDL2_InitForOpenGL(window.GetWindow(), context);
 		ImGui_ImplOpenGL3_Init(glslVersion);
 
