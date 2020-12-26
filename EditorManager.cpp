@@ -20,6 +20,7 @@ using RPG::EditorManager;
 struct EditorManager::Internal {
 	std::vector<std::unique_ptr<RPG::IEditorWindow>> editorWindows;
 	std::unique_ptr<RPG::MainMenuBarWindow> mainMenuBarWindow;
+	std::unique_ptr<RPG::SceneWindow> sceneWindow;
 
 	Internal(const RPG::SDLWindow& window, SDL_GLContext context) {
 		RPG::Log("EditorManager", "Starting up the editor");
@@ -55,7 +56,8 @@ struct EditorManager::Internal {
 		ImGui_ImplOpenGL3_Init(glslVersion);
 
 		//Setup Base windows
-		std::unique_ptr<RPG::SceneWindow> sceneWindow = std::make_unique<RPG::SceneWindow>();
+		//std::unique_ptr<RPG::SceneWindow> sceneWindow = std::make_unique<RPG::SceneWindow>();
+		sceneWindow = std::make_unique<RPG::SceneWindow>();
 		std::unique_ptr<RPG::GameWindow> gameWindow = std::make_unique<RPG::GameWindow>();
 		std::unique_ptr<RPG::HierarchyWindow> hierarchyWindow = std::make_unique<RPG::HierarchyWindow>();
 
@@ -147,6 +149,8 @@ struct EditorManager::Internal {
 	void BuildGUI() {
 		//ImGui::ShowDemoWindow();
 		ImGuiID dockSpaceID = ImGui::DockSpaceOverViewport();
+
+		//sceneWindow->SetFrameBuffer(frameBuffer.GetRenderTextureID());
 
 		for (auto&& editorWindow : editorWindows) {
 			editorWindow->Render(dockSpaceID);

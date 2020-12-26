@@ -8,9 +8,10 @@ using RPG::SceneWindow;
 
 struct SceneWindow::Internal {
 
-	bool isOpened;
+	uint32_t frameBufferID = 1;
+	bool isOpened = true;
 
-	Internal() : isOpened(true) {}
+	Internal() {}
 
 	void Render(ImGuiID dockID) {
 		if (!isOpened) return;
@@ -18,9 +19,15 @@ struct SceneWindow::Internal {
 		ImGui::SetNextWindowDockID(dockID, ImGuiCond_FirstUseEver);
 		ImGui::Begin("Scene", &isOpened);
 
-
+		//TODO: Figure this out to the same aspect ratio we are currently rendering at
+		ImVec2 size = ImGui::GetContentRegionAvail();
+		ImGui::Image((void *) (intptr_t) frameBufferID, size, ImVec2{0, 1}, ImVec2{1, 0});
 
 		ImGui::End();
+	}
+
+	void SetFrameBuffer(uint32_t id) {
+		frameBufferID = id;
 	}
 };
 
@@ -40,4 +47,8 @@ RPG::Action<>::Func<bool> SceneWindow::IsOpen() {
 	return [this] () -> bool {
 		return internal->isOpened;
 	};
+}
+
+void SceneWindow::SetFrameBuffer(uint32_t frameBufferID) {
+	internal->SetFrameBuffer(frameBufferID);
 }

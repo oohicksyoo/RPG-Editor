@@ -6,6 +6,7 @@
 
 #include "../engine/core/InternalPointer.hpp"
 #include "../engine/core/SDLWindow.hpp"
+#include "../engine/core/FrameBuffer.hpp"
 
 namespace RPG {
 	struct EditorManager {

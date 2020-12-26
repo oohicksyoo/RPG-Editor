@@ -7,10 +7,10 @@
 using RPG::GameWindow;
 
 struct GameWindow::Internal {
+	uint32_t frameBufferID = 1;
+	bool isOpened = true;
 
-	bool isOpened;
-
-	Internal() : isOpened(true) {}
+	Internal() {}
 
 	void Render(ImGuiID dockID) {
 		if (!isOpened) return;
@@ -18,7 +18,9 @@ struct GameWindow::Internal {
 		ImGui::SetNextWindowDockID(dockID, ImGuiCond_FirstUseEver);
 		ImGui::Begin("Game", &isOpened);
 
-
+		//TODO: Figure this out to the same aspect ratio we are currently rendering at
+		ImVec2 size = ImGui::GetContentRegionAvail();
+		ImGui::Image((void *) (intptr_t) frameBufferID, size, ImVec2{0, 1}, ImVec2{1, 0});
 
 		ImGui::End();
 	}
