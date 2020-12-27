@@ -3,6 +3,7 @@
 //
 
 #include "SceneWindow.hpp"
+#include "../engine/application/ApplicationStats.hpp"
 
 using RPG::SceneWindow;
 
@@ -19,11 +20,30 @@ struct SceneWindow::Internal {
 		ImGui::SetNextWindowDockID(dockID, ImGuiCond_FirstUseEver);
 		ImGui::Begin("Scene", &isOpened);
 
-		//TODO: Figure this out to the same aspect ratio we are currently rendering at
 		ImVec2 size = ImGui::GetContentRegionAvail();
-		ImGui::Image((void *) (intptr_t) frameBufferID, size, ImVec2{0, 1}, ImVec2{1, 0});
+		ImGui::Image((void *) (intptr_t) frameBufferID, CalculateContentSize(size), ImVec2{0, 1}, ImVec2{1, 0});
 
 		ImGui::End();
+	}
+
+	ImVec2 CalculateContentSize(ImVec2 availableSize) {
+		auto size = RPG::ApplicationStats::GetInstance().GetRenderingSize();
+		ImVec2 frameBufferSize{size.x, size.y};
+
+		float width = frameBufferSize.x;
+		float height = frameBufferSize.y;
+		float ratio = frameBufferSize.x / frameBufferSize.y;
+		float reciprocal = 1 / ratio;
+
+		height = availableSize.x * reciprocal;
+
+		if (height > availableSize.y) {
+			height = availableSize.y;
+		}
+
+		width = height * ratio;
+
+		return ImVec2{width, height};
 	}
 
 	void SetFrameBuffer(uint32_t id) {
