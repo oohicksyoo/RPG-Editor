@@ -8,7 +8,7 @@
 using RPG::GameWindow;
 
 struct GameWindow::Internal {
-	uint32_t frameBufferID = 1;
+	uint32_t frameBufferID;
 	bool isOpened = true;
 
 	Internal() {}
@@ -44,6 +44,10 @@ struct GameWindow::Internal {
 
 		return ImVec2{width, height};
 	}
+
+	void SetFrameBuffer(uint32_t id) {
+		frameBufferID = id;
+	}
 };
 
 GameWindow::GameWindow() : internal(RPG::MakeInternalPointer<Internal>()) {}
@@ -62,4 +66,8 @@ RPG::Action<>::Func<bool> GameWindow::IsOpen() {
 	return [this] () -> bool {
 		return internal->isOpened;
 	};
+}
+
+void GameWindow::SetFrameBuffer(uint32_t frameBufferID) {
+	internal->SetFrameBuffer(frameBufferID);
 }

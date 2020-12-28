@@ -18,9 +18,11 @@
 using RPG::EditorManager;
 
 struct EditorManager::Internal {
-	std::vector<std::unique_ptr<RPG::IEditorWindow>> editorWindows;
-	std::unique_ptr<RPG::MainMenuBarWindow> mainMenuBarWindow;
-	std::unique_ptr<RPG::SceneWindow> sceneWindow;
+	std::vector<std::shared_ptr<RPG::IEditorWindow>> editorWindows;
+	std::shared_ptr<RPG::MainMenuBarWindow> mainMenuBarWindow;
+	std::shared_ptr<RPG::SceneWindow> sceneWindow;
+	std::shared_ptr<RPG::GameWindow> gameWindow;
+	std::shared_ptr<RPG::HierarchyWindow> hierarchyWindow;
 
 	Internal(const RPG::SDLWindow& window, SDL_GLContext context) {
 		RPG::Log("EditorManager", "Starting up the editor");
@@ -58,18 +60,18 @@ struct EditorManager::Internal {
 		//Setup Base windows
 		//std::unique_ptr<RPG::SceneWindow> sceneWindow = std::make_unique<RPG::SceneWindow>();
 		sceneWindow = std::make_unique<RPG::SceneWindow>();
-		std::unique_ptr<RPG::GameWindow> gameWindow = std::make_unique<RPG::GameWindow>();
-		std::unique_ptr<RPG::HierarchyWindow> hierarchyWindow = std::make_unique<RPG::HierarchyWindow>();
+		gameWindow = std::make_unique<RPG::GameWindow>();
+		hierarchyWindow = std::make_unique<RPG::HierarchyWindow>();
 
 		mainMenuBarWindow = std::make_unique<RPG::MainMenuBarWindow>();
 		mainMenuBarWindow->AddToggleableEditorWindow({"Scene", sceneWindow->ToggleIsOpen(), sceneWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Game", gameWindow->ToggleIsOpen(), gameWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Hierarchy", hierarchyWindow->ToggleIsOpen(), hierarchyWindow->IsOpen()});
 
-		editorWindows.push_back(std::unique_ptr<RPG::IEditorWindow>(std::move(mainMenuBarWindow)));
-		editorWindows.push_back(std::unique_ptr<RPG::IEditorWindow>(std::move(sceneWindow)));
-		editorWindows.push_back(std::unique_ptr<RPG::IEditorWindow>(std::move(gameWindow)));
-		editorWindows.push_back(std::unique_ptr<RPG::IEditorWindow>(std::move(hierarchyWindow)));
+		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(mainMenuBarWindow));
+		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(sceneWindow));
+		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(gameWindow));
+		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(hierarchyWindow));
 
 		RPG::Log("EditorManager", "Initialization complete");
 	}
@@ -146,15 +148,21 @@ struct EditorManager::Internal {
 		ImGui::NewFrame();
 	}
 
-	void BuildGUI() {
-		//ImGui::ShowDemoWindow();
+	void BuildGUI(std::shared_ptr<FrameBuffer> frameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy) {
 		ImGuiID dockSpaceID = ImGui::DockSpaceOverViewport();
 
-		//sceneWindow->SetFrameBuffer(frameBuffer.GetRenderTextureID());
+		RPG::Log("Editor Manager", std::to_string(hierarchy->GetHierarchy().size()));
+		RPG::Log("Editor Manager", "Hierarchy Window Available: " + std::to_string(hierarchyWindow != nullptr));
+
+		sceneWindow->SetFrameBuffer(frameBuffer->GetRenderTextureID());
+		gameWindow->SetFrameBuffer(frameBuffer->GetRenderTextureID());
+		hierarchyWindow->SetHierarchy(hierarchy);
 
 		for (auto&& editorWindow : editorWindows) {
 			editorWindow->Render(dockSpaceID);
 		}
+
+		//ImGui::ShowDemoWindow();
 	}
 
 	void Render() {
@@ -169,8 +177,8 @@ void EditorManager::NewFrame(const RPG::SDLWindow& window) {
 	internal->NewFrame(window);
 }
 
-void EditorManager::BuildGUI() {
-	internal->BuildGUI();
+void EditorManager::BuildGUI(std::shared_ptr<RPG::FrameBuffer> frameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy) {
+	internal->BuildGUI(frameBuffer, hierarchy);
 }
 
 void EditorManager::Render() {

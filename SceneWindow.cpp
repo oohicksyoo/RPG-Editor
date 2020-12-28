@@ -8,8 +8,7 @@
 using RPG::SceneWindow;
 
 struct SceneWindow::Internal {
-
-	uint32_t frameBufferID = 1;
+	uint32_t frameBufferID;
 	bool isOpened = true;
 
 	Internal() {}

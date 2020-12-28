@@ -15,6 +15,7 @@ namespace RPG {
 			void Render(ImGuiID dockID) override;
 			RPG::Action<>::Callback ToggleIsOpen() override;
 			RPG::Action<>::Func<bool> IsOpen() override;
+			void SetFrameBuffer(uint32_t frameBufferID);
 
 		private:
 			struct Internal;
