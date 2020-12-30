@@ -4,6 +4,7 @@
 
 #include "HierarchyWindow.hpp"
 #include "../engine/core/Log.hpp"
+#include "payloads/GameObjectPayload.hpp"
 
 using RPG::HierarchyWindow;
 
@@ -25,6 +26,14 @@ struct HierarchyWindow::Internal {
 
 		for (std::shared_ptr<RPG::GameObject> gameObject : hierarchy->GetHierarchy()) {
 			RenderGameObject(gameObject);
+		}
+
+		if (ImGui::BeginPopupContextWindow("Context Menu")) {
+			if (ImGui::Button("New GameObject")) {
+				hierarchy->Add(std::make_unique<RPG::GameObject>(RPG::GameObject()));
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
 		}
 
 		ImGui::End();
@@ -52,19 +61,33 @@ struct HierarchyWindow::Internal {
 			selectedGameObject = isSelected ? nullptr : gameObject;
 		}
 
-		//Drag and Drop
+		//Drag - payload
 		if (ImGui::BeginDragDropSource()) {
-			ImGui::SetDragDropPayload("GameObject", &gameObject, sizeof(RPG::GameObject));
+			RPG::GameObjectPayload payload = RPG::GameObjectPayload();
+			payload.guid = gameObject->GetGuid();
+			payload.gameObject = gameObject;
+
+			ImGui::SetDragDropPayload("GameObject", &payload, sizeof(RPG::GameObjectPayload));
 			std::string str = "GameObject: " + gameObject->GetName();
 			ImGui::Text(str.c_str());
 			ImGui::EndDragDropSource();
 		}
 
+		//Drop - payload
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GameObject")) {
-				IM_ASSERT(payload->DataSize == sizeof(RPG::GameObject));
+				IM_ASSERT(payload->DataSize == sizeof(RPG::GameObjectPayload));
 				RPG::Log("Hierarchy Window" , "Payload for a GameObject arrived");
-				//RPG::GameObject payload_n = std::static_pointer_cast<RPG::GameObject>(payload->Data);
+				RPG::GameObjectPayload p = *(const RPG::GameObjectPayload*)payload->Data;
+				RPG::Log("Hierarchy Window", "Guid: " + p.guid);
+				RPG::Log("Hierarchy Window", "Guid: " + p.gameObject->GetGuid());
+				if (gameObject->GetGuid() != p.guid) {
+					if (!p.gameObject->HasParent()) {
+						RPG::Log("Hierarchy Window", "Removing gameobject from start of hierarchy");
+						hierarchy->Remove(p.gameObject);
+					}
+					p.gameObject->SetParent(p.gameObject, gameObject);
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
