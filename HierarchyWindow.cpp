@@ -79,11 +79,8 @@ struct HierarchyWindow::Internal {
 				IM_ASSERT(payload->DataSize == sizeof(RPG::GameObjectPayload));
 				RPG::Log("Hierarchy Window" , "Payload for a GameObject arrived");
 				RPG::GameObjectPayload p = *(const RPG::GameObjectPayload*)payload->Data;
-				RPG::Log("Hierarchy Window", "Guid: " + p.guid);
-				RPG::Log("Hierarchy Window", "Guid: " + p.gameObject->GetGuid());
 				if (gameObject->GetGuid() != p.guid) {
 					if (!p.gameObject->HasParent()) {
-						RPG::Log("Hierarchy Window", "Removing gameobject from start of hierarchy");
 						hierarchy->Remove(p.gameObject);
 					}
 					p.gameObject->SetParent(p.gameObject, gameObject);
