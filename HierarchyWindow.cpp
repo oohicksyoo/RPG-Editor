@@ -3,15 +3,19 @@
 //
 
 #include "HierarchyWindow.hpp"
-#include "../engine/core/GameObject.hpp"
+#include "../engine/core/Log.hpp"
 
 using RPG::HierarchyWindow;
 
 struct HierarchyWindow::Internal {
 	bool isOpened;
 	std::shared_ptr<RPG::Hierarchy> hierarchy;
+	std::string selectedGuid;
+	std::shared_ptr<RPG::GameObject> selectedGameObject;
 
-	Internal() : isOpened(true) {}
+	Internal() : isOpened(true),
+				 selectedGuid(""),
+				 selectedGameObject(nullptr) {}
 
 	void Render(ImGuiID dockID) {
 		if (!isOpened) return;
@@ -27,7 +31,7 @@ struct HierarchyWindow::Internal {
 	}
 
 	void RenderGameObject(std::shared_ptr<RPG::GameObject> gameObject) {
-		bool isSelected = false; //TODO: Change this to check gameObject guid to current selected guid
+		bool isSelected = selectedGuid == gameObject->GetGuid();
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_None;
 		if (!gameObject->HasChildren()) {
 			flags |= ImGuiTreeNodeFlags_Leaf;
@@ -36,11 +40,36 @@ struct HierarchyWindow::Internal {
 		}
 
 		//Selected goes here
+		if (isSelected) {
+			flags |= ImGuiTreeNodeFlags_Selected;
+		}
 
-		bool isOpen = ImGui::TreeNodeEx((void*)(intptr_t)0, flags, gameObject->GetName().c_str());
+		bool isOpen = ImGui::TreeNodeEx(gameObject->GetGuid().c_str(), flags, gameObject->GetName().c_str());
 
 		//Check click
+		if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing()) {
+			selectedGuid = isSelected ? "" : gameObject->GetGuid();
+			selectedGameObject = isSelected ? nullptr : gameObject;
+		}
 
+		//Drag and Drop
+		if (ImGui::BeginDragDropSource()) {
+			ImGui::SetDragDropPayload("GameObject", &gameObject, sizeof(RPG::GameObject));
+			std::string str = "GameObject: " + gameObject->GetName();
+			ImGui::Text(str.c_str());
+			ImGui::EndDragDropSource();
+		}
+
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GameObject")) {
+				IM_ASSERT(payload->DataSize == sizeof(RPG::GameObject));
+				RPG::Log("Hierarchy Window" , "Payload for a GameObject arrived");
+				//RPG::GameObject payload_n = std::static_pointer_cast<RPG::GameObject>(payload->Data);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		//Render out children
 		if (isOpen) {
 			for (std::shared_ptr<RPG::GameObject> childGameObject : gameObject->GetChildren()) {
 				RenderGameObject(childGameObject);

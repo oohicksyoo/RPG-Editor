@@ -151,9 +151,6 @@ struct EditorManager::Internal {
 	void BuildGUI(std::shared_ptr<FrameBuffer> frameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy) {
 		ImGuiID dockSpaceID = ImGui::DockSpaceOverViewport();
 
-		RPG::Log("Editor Manager", std::to_string(hierarchy->GetHierarchy().size()));
-		RPG::Log("Editor Manager", "Hierarchy Window Available: " + std::to_string(hierarchyWindow != nullptr));
-
 		sceneWindow->SetFrameBuffer(frameBuffer->GetRenderTextureID());
 		gameWindow->SetFrameBuffer(frameBuffer->GetRenderTextureID());
 		hierarchyWindow->SetHierarchy(hierarchy);
