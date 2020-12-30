@@ -20,8 +20,8 @@ namespace RPG {
 			void AddToggleableEditorWindow(RPG::MainMenuBarEditorWindowToggle editorWindow);
 
 
-			void SceneToggleAction(RPG::Action<>::Callback callback);
-			void SceneIsOpened(RPG::Action<>::Func<bool> callback);
+			void PlayToggleAction(RPG::Action<>::Callback callback);
+			void PlayToggleFunc(RPG::Action<>::Func<bool> callback);
 
 		private:
 			struct Internal;

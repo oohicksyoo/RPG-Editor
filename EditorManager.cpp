@@ -18,13 +18,14 @@
 using RPG::EditorManager;
 
 struct EditorManager::Internal {
+	bool isGameRunning;
 	std::vector<std::shared_ptr<RPG::IEditorWindow>> editorWindows;
 	std::shared_ptr<RPG::MainMenuBarWindow> mainMenuBarWindow;
 	std::shared_ptr<RPG::SceneWindow> sceneWindow;
 	std::shared_ptr<RPG::GameWindow> gameWindow;
 	std::shared_ptr<RPG::HierarchyWindow> hierarchyWindow;
 
-	Internal(const RPG::SDLWindow& window, SDL_GLContext context) {
+	Internal(const RPG::SDLWindow& window, SDL_GLContext context) : isGameRunning(false) {
 		RPG::Log("EditorManager", "Starting up the editor");
 		Initialize(window, context);
 	}
@@ -58,7 +59,6 @@ struct EditorManager::Internal {
 		ImGui_ImplOpenGL3_Init(glslVersion);
 
 		//Setup Base windows
-		//std::unique_ptr<RPG::SceneWindow> sceneWindow = std::make_unique<RPG::SceneWindow>();
 		sceneWindow = std::make_unique<RPG::SceneWindow>();
 		gameWindow = std::make_unique<RPG::GameWindow>();
 		hierarchyWindow = std::make_unique<RPG::HierarchyWindow>();
@@ -67,6 +67,12 @@ struct EditorManager::Internal {
 		mainMenuBarWindow->AddToggleableEditorWindow({"Scene", sceneWindow->ToggleIsOpen(), sceneWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Game", gameWindow->ToggleIsOpen(), gameWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Hierarchy", hierarchyWindow->ToggleIsOpen(), hierarchyWindow->IsOpen()});
+		mainMenuBarWindow->PlayToggleAction([this]() {
+			isGameRunning = !isGameRunning;
+		});
+		mainMenuBarWindow->PlayToggleFunc([this]() -> bool {
+			return isGameRunning;
+		});
 
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(mainMenuBarWindow));
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(sceneWindow));
@@ -180,4 +186,8 @@ void EditorManager::BuildGUI(std::shared_ptr<RPG::FrameBuffer> frameBuffer, std:
 
 void EditorManager::Render() {
 	internal->Render();
+}
+
+bool EditorManager::IsGameRunning() {
+	return internal->isGameRunning;
 }

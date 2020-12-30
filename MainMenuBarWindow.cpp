@@ -11,8 +11,8 @@ using RPG::MainMenuBarWindow;
 struct MainMenuBarWindow::Internal {
 
 	std::vector<RPG::MainMenuBarEditorWindowToggle> editorWindowToggles;
-	//RPG::Action<> sceneToggleAction = {};
-	//RPG::Action<>::Func<bool> sceneIsOpenedCallback = {};
+	RPG::Action<> playToggleAction = {};
+	RPG::Action<>::Func<bool> playToggleFunc = {};
 
 	Internal() {}
 
@@ -43,6 +43,11 @@ struct MainMenuBarWindow::Internal {
 				ImGui::EndMenu();
 			}
 
+			std::string playButtonText = playToggleFunc() ? "Stop" : "Start";
+			if (ImGui::MenuItem(playButtonText.c_str())) {
+				playToggleAction.Invoke();
+			}
+
 			ImGui::EndMainMenuBar();
 		}
 	}
@@ -70,12 +75,12 @@ RPG::Action<>::Func<bool> MainMenuBarWindow::IsOpen() {
 	};
 }
 
-void MainMenuBarWindow::SceneToggleAction(RPG::Action<>::Callback callback) {
-	//internal->sceneToggleAction += callback;
+void MainMenuBarWindow::PlayToggleAction(RPG::Action<>::Callback callback) {
+	internal->playToggleAction += callback;
 }
 
-void MainMenuBarWindow::SceneIsOpened(RPG::Action<>::Func<bool> callback) {
-	//internal->sceneIsOpenedCallback = callback;
+void MainMenuBarWindow::PlayToggleFunc(RPG::Action<>::Func<bool> callback) {
+	internal->playToggleFunc = callback;
 }
 
 void MainMenuBarWindow::AddToggleableEditorWindow(RPG::MainMenuBarEditorWindowToggle editorWindow) {

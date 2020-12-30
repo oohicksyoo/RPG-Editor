@@ -16,6 +16,7 @@ namespace RPG {
 			void NewFrame(const RPG::SDLWindow& window);
 			void BuildGUI(std::shared_ptr<RPG::FrameBuffer> frameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy);
 			void Render();
+			bool IsGameRunning();
 
 		private:
 			struct Internal;
