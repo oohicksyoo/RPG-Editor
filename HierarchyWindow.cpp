@@ -13,6 +13,7 @@ struct HierarchyWindow::Internal {
 	std::shared_ptr<RPG::Hierarchy> hierarchy;
 	std::string selectedGuid;
 	std::shared_ptr<RPG::GameObject> selectedGameObject;
+	RPG::Action<std::shared_ptr<RPG::GameObject>> selectedGameObjectAction = {};
 
 	Internal() : isOpened(true),
 				 selectedGuid(""),
@@ -59,6 +60,11 @@ struct HierarchyWindow::Internal {
 		if (ImGui::IsItemClicked() && (ImGui::GetMousePos().x - ImGui::GetItemRectMin().x) > ImGui::GetTreeNodeToLabelSpacing()) {
 			selectedGuid = isSelected ? "" : gameObject->GetGuid();
 			selectedGameObject = isSelected ? nullptr : gameObject;
+
+			//Fire off our selected GameObject
+			if (selectedGameObjectAction.GetListenerCount() > 0) {
+				selectedGameObjectAction.Invoke(selectedGameObject);
+			}
 		}
 
 		//Drag - payload
@@ -119,4 +125,8 @@ RPG::Action<>::Func<bool> HierarchyWindow::IsOpen() {
 
 void HierarchyWindow::SetHierarchy(std::shared_ptr<RPG::Hierarchy> hierarchy) {
 	internal->hierarchy = hierarchy;
+}
+
+void HierarchyWindow::SelectedGameObjectAction(RPG::Action<std::shared_ptr<RPG::GameObject>>::Callback callback) {
+	internal->selectedGameObjectAction += callback;
 }

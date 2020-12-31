@@ -63,8 +63,17 @@ struct EditorManager::Internal {
 		//Setup Base windows
 		sceneWindow = std::make_unique<RPG::SceneWindow>();
 		gameWindow = std::make_unique<RPG::GameWindow>();
-		hierarchyWindow = std::make_unique<RPG::HierarchyWindow>();
+
+		//Setup Inspector Window
 		inspectorWindow = std::make_unique<RPG::InspectorWindow>();
+
+		//Setup Hierarchy Wind
+		hierarchyWindow = std::make_unique<RPG::HierarchyWindow>();
+		hierarchyWindow->SelectedGameObjectAction([this](std::shared_ptr<RPG::GameObject> gameObject) {
+			inspectorWindow->SetSelectedGameObject(gameObject);
+		});
+
+
 
 		mainMenuBarWindow = std::make_unique<RPG::MainMenuBarWindow>();
 		mainMenuBarWindow->AddToggleableEditorWindow({"Scene", sceneWindow->ToggleIsOpen(), sceneWindow->IsOpen()});
@@ -177,6 +186,10 @@ struct EditorManager::Internal {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
+
+	void OnGeneralEventData(SDL_Event event) {
+		ImGui_ImplSDL2_ProcessEvent(&event);
+	}
 };
 
 EditorManager::EditorManager(const RPG::SDLWindow& window, SDL_GLContext context) : internal(RPG::MakeInternalPointer<Internal>(window, context)) {}
@@ -195,4 +208,8 @@ void EditorManager::Render() {
 
 bool EditorManager::IsGameRunning() {
 	return internal->isGameRunning;
+}
+
+void EditorManager::OnGeneralEventData(SDL_Event event) {
+	internal->OnGeneralEventData(event);
 }

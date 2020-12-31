@@ -17,6 +17,7 @@ namespace RPG {
 			void BuildGUI(std::shared_ptr<RPG::FrameBuffer> frameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy);
 			void Render();
 			bool IsGameRunning();
+			void OnGeneralEventData(SDL_Event event);
 
 		private:
 			struct Internal;
