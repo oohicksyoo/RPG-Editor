@@ -45,7 +45,9 @@ struct MainMenuBarWindow::Internal {
 
 			std::string playButtonText = playToggleFunc() ? "Stop" : "Start";
 			if (ImGui::MenuItem(playButtonText.c_str())) {
-				playToggleAction.Invoke();
+				if (playToggleAction.GetListenerCount() > 0) {
+					playToggleAction.Invoke();
+				}
 			}
 
 			ImGui::EndMainMenuBar();
