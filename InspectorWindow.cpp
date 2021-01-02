@@ -4,16 +4,25 @@
 
 #include "InspectorWindow.hpp"
 #include "../engine/core/Log.hpp"
+#include "../engine/core/Property.hpp"
+#include "../engine/core/GLMWrapper.hpp"
+#include "../engine/core/components/CameraComponent.hpp"
+#include "../engine/core/components/LuaScriptComponent.hpp"
+#include "../engine/core/Action.hpp"
 #include <regex>
+#include <unordered_map>
 
 using RPG::InspectorWindow;
 
 struct InspectorWindow::Internal {
 	bool isOpened;
 	std::shared_ptr<RPG::GameObject> selectedGameObject;
+	std::unordered_map<std::string, RPG::Action<std::shared_ptr<RPG::Property>>::Callback> variableTypes;
 
 	Internal() : isOpened(true),
-				 selectedGameObject(nullptr) {}
+				 selectedGameObject(nullptr) {
+		BuildDefaultPropertyLayouts();
+	}
 
 	void Render(ImGuiID dockID) {
 		if (!isOpened) return;
@@ -44,6 +53,9 @@ struct InspectorWindow::Internal {
 				ImGui::BeginGroup();
 				if (ImGui::CollapsingHeader(SplitName(component->Name()).c_str())) {
 					//Render Component Internals
+					for (auto property : component->GetProperties()) {
+						RenderProperty(property);
+					}
 				}
 				ImGui::EndGroup();
 			}
@@ -56,7 +68,20 @@ struct InspectorWindow::Internal {
 				ImGui::Text("Components");
 				ImGui::Separator();
 				if (ImGui::Selectable("Camera Component")) {
-					//TODO: Add Camera Component
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::CameraComponent>(RPG::CameraComponent()));
+					if (component == nullptr) {
+						RPG::Log("SceneMain", "Failed to add (CameraComponent) component to GameObject");
+					} else {
+						RPG::Log("SceneMain", "Added (" + component->Name() + ") component to GameObject");
+					}
+				}
+				if (ImGui::Selectable("Lua Script Component")) {
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::LuaScriptComponent>(RPG::LuaScriptComponent("assets/scripts/Sample.lua")));
+					if (component == nullptr) {
+						RPG::Log("SceneMain", "Failed to add (LuaScriptComponent) component to GameObject");
+					} else {
+						RPG::Log("SceneMain", "Added (" + component->Name() + ") component to GameObject");
+					}
 				}
 				ImGui::EndPopup();
 			}
@@ -71,6 +96,70 @@ struct InspectorWindow::Internal {
 		}
 
 		ImGui::End();
+	}
+
+	void RenderProperty(std::shared_ptr<RPG::Property> property) {
+		//Perhaps have a list that we can add new types to that contain an Action<> this makes it easier to add new types in the future
+		for (auto const& [key, value] : variableTypes) {
+			if (key == property->GetType()) {
+				value(property);
+				return;
+			}
+		}
+
+		RPG::Log("Inspector", "Unable to render property with type (" + property->GetType() + ")");
+	}
+
+	void BuildDefaultPropertyLayouts() {
+		variableTypes.insert({"std::string", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			std::string v = std::any_cast<std::string>(prop);
+			if (ImGui::InputText(property->GetName().c_str(), &v)) {
+				property->SetProperty(v);
+			}
+		}});
+
+		variableTypes.insert({"int", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			int v = std::any_cast<int>(prop);
+			if (ImGui::DragInt(property->GetName().c_str(), (int*)&v)) {
+				property->SetProperty(v);
+			}
+		}});
+
+		variableTypes.insert({"float", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			float v = std::any_cast<float>(prop);
+			if (ImGui::DragFloat(property->GetName().c_str(), (float*)&v)) {
+				property->SetProperty(v);
+			}
+		}});
+
+		variableTypes.insert({"glm::vec2", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			glm::vec2 v = std::any_cast<glm::vec2>(prop);
+			if (ImGui::DragFloat2(property->GetName().c_str(), (float*)&v)) {
+				property->SetProperty(v);
+			}
+		}});
+
+		variableTypes.insert({"glm::vec3", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			glm::vec3 v = std::any_cast<glm::vec3>(prop);
+			if (ImGui::DragFloat3(property->GetName().c_str(), (float*)&v)) {
+				property->SetProperty(v);
+			}
+		}});
+
+		variableTypes.insert({"RPG::CameraType", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			RPG::CameraType v = std::any_cast<RPG::CameraType>(prop);
+			int num = static_cast<int>(v);
+			if (ImGui::Combo(property->GetName().c_str(), &num, "Perspective\0Orthographic\0\0")) {
+				v = static_cast<RPG::CameraType>(num);
+				property->SetProperty(v);
+			}
+		}});
 	}
 
 	std::string SplitName(std::string name) {
@@ -99,4 +188,10 @@ RPG::Action<>::Func<bool> InspectorWindow::IsOpen() {
 
 void InspectorWindow::SetSelectedGameObject(std::shared_ptr<RPG::GameObject> gameObject) {
 	internal->selectedGameObject = gameObject;
+}
+
+void InspectorWindow::AddPropertyLayout(
+		std::pair<std::string, RPG::Action<std::shared_ptr<RPG::Property>>::Callback> pair) {
+	//TODO: In future double check the key is not already used, maybe we use that to override the default methods
+	internal->variableTypes.insert(pair);
 }
