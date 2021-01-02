@@ -8,7 +8,9 @@
 #include "../engine/core/GLMWrapper.hpp"
 #include "../engine/core/components/CameraComponent.hpp"
 #include "../engine/core/components/LuaScriptComponent.hpp"
+#include "../engine/core/components/MeshComponent.hpp"
 #include "../engine/core/Action.hpp"
+#include "../engine/core/AssetInventory.hpp"
 #include <regex>
 #include <unordered_map>
 
@@ -79,6 +81,14 @@ struct InspectorWindow::Internal {
 					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::LuaScriptComponent>(RPG::LuaScriptComponent("assets/scripts/Sample.lua")));
 					if (component == nullptr) {
 						RPG::Log("SceneMain", "Failed to add (LuaScriptComponent) component to GameObject");
+					} else {
+						RPG::Log("SceneMain", "Added (" + component->Name() + ") component to GameObject");
+					}
+				}
+				if (ImGui::Selectable("Mesh Component")) {
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::MeshComponent>(RPG::MeshComponent(RPG::Assets::StaticMesh::Crate, RPG::Assets::Texture::Crate)));
+					if (component == nullptr) {
+						RPG::Log("SceneMain", "Failed to add (MeshComponent) component to GameObject");
 					} else {
 						RPG::Log("SceneMain", "Added (" + component->Name() + ") component to GameObject");
 					}
@@ -157,6 +167,26 @@ struct InspectorWindow::Internal {
 			int num = static_cast<int>(v);
 			if (ImGui::Combo(property->GetName().c_str(), &num, "Perspective\0Orthographic\0\0")) {
 				v = static_cast<RPG::CameraType>(num);
+				property->SetProperty(v);
+			}
+		}});
+
+		variableTypes.insert({"RPG::Assets::StaticMesh", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			RPG::Assets::StaticMesh v = std::any_cast<RPG::Assets::StaticMesh>(prop);
+			int num = static_cast<int>(v);
+			if (ImGui::Combo(property->GetName().c_str(), &num, "Crate\0\0")) {
+				v = static_cast<RPG::Assets::StaticMesh>(num);
+				property->SetProperty(v);
+			}
+		}});
+
+		variableTypes.insert({"RPG::Assets::Texture", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			RPG::Assets::Texture v = std::any_cast<RPG::Assets::Texture>(prop);
+			int num = static_cast<int>(v);
+			if (ImGui::Combo(property->GetName().c_str(), &num, "Crate\0\0")) {
+				v = static_cast<RPG::Assets::Texture>(num);
 				property->SetProperty(v);
 			}
 		}});
