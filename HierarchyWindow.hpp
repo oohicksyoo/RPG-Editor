@@ -9,7 +9,6 @@
 #include "../engine/core/InternalPointer.hpp"
 #include "../engine/core/GameObject.hpp"
 #include "../engine/core/Hierarchy.hpp"
-#include "../engine/core/Action.hpp"
 
 namespace RPG {
 	struct HierarchyWindow : public IEditorWindow {
