@@ -53,7 +53,8 @@ struct InspectorWindow::Internal {
 			for (auto component : selectedGameObject->GetComponents()) {
 				ImGui::Separator();
 				ImGui::BeginGroup();
-				if (ImGui::CollapsingHeader(SplitName(component->Name()).c_str())) {
+				std::string name = SplitName(component->Name()) + "##" + component->Guid();
+				if (ImGui::CollapsingHeader(name.c_str())) {
 					//Render Component Internals
 					for (auto property : component->GetProperties()) {
 						RenderProperty(property);
