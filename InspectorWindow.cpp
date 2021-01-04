@@ -125,7 +125,7 @@ struct InspectorWindow::Internal {
 		variableTypes.insert({"std::string", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			std::string v = std::any_cast<std::string>(prop);
-			if (ImGui::InputText(property->GetName().c_str(), &v)) {
+			if (ImGui::InputText(property->GetEditorName().c_str(), &v)) {
 				property->SetProperty(v);
 			}
 		}});
@@ -133,7 +133,7 @@ struct InspectorWindow::Internal {
 		variableTypes.insert({"int", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			int v = std::any_cast<int>(prop);
-			if (ImGui::DragInt(property->GetName().c_str(), (int*)&v)) {
+			if (ImGui::DragInt(property->GetEditorName().c_str(), (int*)&v)) {
 				property->SetProperty(v);
 			}
 		}});
@@ -141,7 +141,7 @@ struct InspectorWindow::Internal {
 		variableTypes.insert({"float", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			float v = std::any_cast<float>(prop);
-			if (ImGui::DragFloat(property->GetName().c_str(), (float*)&v)) {
+			if (ImGui::DragFloat(property->GetEditorName().c_str(), (float*)&v)) {
 				property->SetProperty(v);
 			}
 		}});
@@ -149,7 +149,7 @@ struct InspectorWindow::Internal {
 		variableTypes.insert({"glm::vec2", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			glm::vec2 v = std::any_cast<glm::vec2>(prop);
-			if (ImGui::DragFloat2(property->GetName().c_str(), (float*)&v)) {
+			if (ImGui::DragFloat2(property->GetEditorName().c_str(), (float*)&v)) {
 				property->SetProperty(v);
 			}
 		}});
@@ -157,7 +157,7 @@ struct InspectorWindow::Internal {
 		variableTypes.insert({"glm::vec3", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			glm::vec3 v = std::any_cast<glm::vec3>(prop);
-			if (ImGui::DragFloat3(property->GetName().c_str(), (float*)&v)) {
+			if (ImGui::DragFloat3(property->GetEditorName().c_str(), (float*)&v)) {
 				property->SetProperty(v);
 			}
 		}});
@@ -166,7 +166,7 @@ struct InspectorWindow::Internal {
 			std::any prop = property->GetProperty();
 			RPG::CameraType v = std::any_cast<RPG::CameraType>(prop);
 			int num = static_cast<int>(v);
-			if (ImGui::Combo(property->GetName().c_str(), &num, "Perspective\0Orthographic\0\0")) {
+			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Perspective\0Orthographic\0\0")) {
 				v = static_cast<RPG::CameraType>(num);
 				property->SetProperty(v);
 			}
@@ -176,7 +176,7 @@ struct InspectorWindow::Internal {
 			std::any prop = property->GetProperty();
 			RPG::Assets::StaticMesh v = std::any_cast<RPG::Assets::StaticMesh>(prop);
 			int num = static_cast<int>(v);
-			if (ImGui::Combo(property->GetName().c_str(), &num, "Crate\0\0")) {
+			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Crate\0\0")) {
 				v = static_cast<RPG::Assets::StaticMesh>(num);
 				property->SetProperty(v);
 			}
@@ -186,7 +186,7 @@ struct InspectorWindow::Internal {
 			std::any prop = property->GetProperty();
 			RPG::Assets::Texture v = std::any_cast<RPG::Assets::Texture>(prop);
 			int num = static_cast<int>(v);
-			if (ImGui::Combo(property->GetName().c_str(), &num, "Crate\0\0")) {
+			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Crate\0\0")) {
 				v = static_cast<RPG::Assets::Texture>(num);
 				property->SetProperty(v);
 			}
