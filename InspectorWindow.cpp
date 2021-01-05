@@ -9,6 +9,7 @@
 #include "../engine/core/components/CameraComponent.hpp"
 #include "../engine/core/components/LuaScriptComponent.hpp"
 #include "../engine/core/components/MeshComponent.hpp"
+#include "../engine/core/components/SpriteComponent.hpp"
 #include "../engine/core/Action.hpp"
 #include "../engine/core/AssetInventory.hpp"
 #include <regex>
@@ -90,6 +91,14 @@ struct InspectorWindow::Internal {
 					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::MeshComponent>(RPG::MeshComponent(RPG::Assets::StaticMesh::Crate, RPG::Assets::Texture::Crate)));
 					if (component == nullptr) {
 						RPG::Log("SceneMain", "Failed to add (MeshComponent) component to GameObject");
+					} else {
+						RPG::Log("SceneMain", "Added (" + component->Name() + ") component to GameObject");
+					}
+				}
+				if (ImGui::Selectable("Sprite Component")) {
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::SpriteComponent>(RPG::SpriteComponent(RPG::Assets::Texture::Crate)));
+					if (component == nullptr) {
+						RPG::Log("SceneMain", "Failed to add (SpriteComponent) component to GameObject");
 					} else {
 						RPG::Log("SceneMain", "Added (" + component->Name() + ") component to GameObject");
 					}
@@ -176,7 +185,7 @@ struct InspectorWindow::Internal {
 			std::any prop = property->GetProperty();
 			RPG::Assets::StaticMesh v = std::any_cast<RPG::Assets::StaticMesh>(prop);
 			int num = static_cast<int>(v);
-			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Crate\0\0")) {
+			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Quad\0Crate\0\0")) {
 				v = static_cast<RPG::Assets::StaticMesh>(num);
 				property->SetProperty(v);
 			}
@@ -186,7 +195,7 @@ struct InspectorWindow::Internal {
 			std::any prop = property->GetProperty();
 			RPG::Assets::Texture v = std::any_cast<RPG::Assets::Texture>(prop);
 			int num = static_cast<int>(v);
-			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Crate\0\0")) {
+			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Crate\0Sprite\0\0")) {
 				v = static_cast<RPG::Assets::Texture>(num);
 				property->SetProperty(v);
 			}
