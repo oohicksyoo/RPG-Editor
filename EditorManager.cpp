@@ -15,6 +15,7 @@
 #include "GameWindow.hpp"
 #include "HierarchyWindow.hpp"
 #include "InspectorWindow.hpp"
+#include "AssetWindow.hpp"
 
 using RPG::EditorManager;
 
@@ -26,6 +27,7 @@ struct EditorManager::Internal {
 	std::shared_ptr<RPG::GameWindow> gameWindow;
 	std::shared_ptr<RPG::HierarchyWindow> hierarchyWindow;
 	std::shared_ptr<RPG::InspectorWindow> inspectorWindow;
+	std::shared_ptr<RPG::AssetWindow> assetWindow;
 
 	Internal(const RPG::SDLWindow& window, SDL_GLContext context) : isGameRunning(false) {
 		RPG::Log("EditorManager", "Starting up the editor");
@@ -67,19 +69,21 @@ struct EditorManager::Internal {
 		//Setup Inspector Window
 		inspectorWindow = std::make_unique<RPG::InspectorWindow>();
 
-		//Setup Hierarchy Wind
+		//Setup Hierarchy Window
 		hierarchyWindow = std::make_unique<RPG::HierarchyWindow>();
 		hierarchyWindow->SelectedGameObjectAction([this](std::shared_ptr<RPG::GameObject> gameObject) {
 			inspectorWindow->SetSelectedGameObject(gameObject);
 		});
 
-
+		//Setup AssetWindow
+		assetWindow = std::make_unique<RPG::AssetWindow>();
 
 		mainMenuBarWindow = std::make_unique<RPG::MainMenuBarWindow>();
 		mainMenuBarWindow->AddToggleableEditorWindow({"Scene", sceneWindow->ToggleIsOpen(), sceneWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Game", gameWindow->ToggleIsOpen(), gameWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Hierarchy", hierarchyWindow->ToggleIsOpen(), hierarchyWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Inspector", inspectorWindow->ToggleIsOpen(), inspectorWindow->IsOpen()});
+		mainMenuBarWindow->AddToggleableEditorWindow({"Assets", assetWindow->ToggleIsOpen(), assetWindow->IsOpen()});
 		mainMenuBarWindow->PlayToggleAction([this]() {
 			isGameRunning = !isGameRunning;
 		});
@@ -92,6 +96,7 @@ struct EditorManager::Internal {
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(gameWindow));
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(hierarchyWindow));
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(inspectorWindow));
+		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(assetWindow));
 
 		RPG::Log("EditorManager", "Initialization complete");
 	}
