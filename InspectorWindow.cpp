@@ -12,15 +12,14 @@
 #include "../engine/core/components/SpriteComponent.hpp"
 #include "../engine/core/Action.hpp"
 #include "../engine/core/AssetInventory.hpp"
+#include "../engine/core/Serializer.hpp"
 #include <regex>
-#include <unordered_map>
 
 using RPG::InspectorWindow;
 
 struct InspectorWindow::Internal {
 	bool isOpened;
 	std::shared_ptr<RPG::GameObject> selectedGameObject;
-	std::unordered_map<std::string, RPG::Action<std::shared_ptr<RPG::Property>>::Callback> variableTypes;
 
 	Internal() : isOpened(true),
 				 selectedGameObject(nullptr) {
@@ -120,7 +119,7 @@ struct InspectorWindow::Internal {
 
 	void RenderProperty(std::shared_ptr<RPG::Property> property) {
 		//Perhaps have a list that we can add new types to that contain an Action<> this makes it easier to add new types in the future
-		for (auto const& [key, value] : variableTypes) {
+		for (auto const& [key, value] : RPG::Serializer::GetInstance().GetPropertyLayouts()) {
 			if (key == property->GetType()) {
 				value(property);
 				return;
@@ -131,7 +130,7 @@ struct InspectorWindow::Internal {
 	}
 
 	void BuildDefaultPropertyLayouts() {
-		variableTypes.insert({"std::string", [](std::shared_ptr<RPG::Property> property) {
+		RPG::Serializer::GetInstance().AddPropertyLayout({"std::string", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			std::string v = std::any_cast<std::string>(prop);
 			if (ImGui::InputText(property->GetEditorName().c_str(), &v)) {
@@ -139,7 +138,7 @@ struct InspectorWindow::Internal {
 			}
 		}});
 
-		variableTypes.insert({"int", [](std::shared_ptr<RPG::Property> property) {
+		RPG::Serializer::GetInstance().AddPropertyLayout({"int", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			int v = std::any_cast<int>(prop);
 			if (ImGui::DragInt(property->GetEditorName().c_str(), (int*)&v)) {
@@ -147,7 +146,7 @@ struct InspectorWindow::Internal {
 			}
 		}});
 
-		variableTypes.insert({"float", [](std::shared_ptr<RPG::Property> property) {
+		RPG::Serializer::GetInstance().AddPropertyLayout({"float", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			float v = std::any_cast<float>(prop);
 			if (ImGui::DragFloat(property->GetEditorName().c_str(), (float*)&v)) {
@@ -155,7 +154,7 @@ struct InspectorWindow::Internal {
 			}
 		}});
 
-		variableTypes.insert({"glm::vec2", [](std::shared_ptr<RPG::Property> property) {
+		RPG::Serializer::GetInstance().AddPropertyLayout({"glm::vec2", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			glm::vec2 v = std::any_cast<glm::vec2>(prop);
 			if (ImGui::DragFloat2(property->GetEditorName().c_str(), (float*)&v)) {
@@ -163,7 +162,7 @@ struct InspectorWindow::Internal {
 			}
 		}});
 
-		variableTypes.insert({"glm::vec3", [](std::shared_ptr<RPG::Property> property) {
+		RPG::Serializer::GetInstance().AddPropertyLayout({"glm::vec3", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			glm::vec3 v = std::any_cast<glm::vec3>(prop);
 			if (ImGui::DragFloat3(property->GetEditorName().c_str(), (float*)&v)) {
@@ -171,7 +170,7 @@ struct InspectorWindow::Internal {
 			}
 		}});
 
-		variableTypes.insert({"RPG::CameraType", [](std::shared_ptr<RPG::Property> property) {
+		RPG::Serializer::GetInstance().AddPropertyLayout({"RPG::CameraType", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			RPG::CameraType v = std::any_cast<RPG::CameraType>(prop);
 			int num = static_cast<int>(v);
@@ -181,7 +180,7 @@ struct InspectorWindow::Internal {
 			}
 		}});
 
-		variableTypes.insert({"RPG::Assets::StaticMesh", [](std::shared_ptr<RPG::Property> property) {
+		RPG::Serializer::GetInstance().AddPropertyLayout({"RPG::Assets::StaticMesh", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			RPG::Assets::StaticMesh v = std::any_cast<RPG::Assets::StaticMesh>(prop);
 			int num = static_cast<int>(v);
@@ -191,7 +190,7 @@ struct InspectorWindow::Internal {
 			}
 		}});
 
-		variableTypes.insert({"RPG::Assets::Texture", [](std::shared_ptr<RPG::Property> property) {
+		RPG::Serializer::GetInstance().AddPropertyLayout({"RPG::Assets::Texture", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			RPG::Assets::Texture v = std::any_cast<RPG::Assets::Texture>(prop);
 			int num = static_cast<int>(v);
@@ -228,10 +227,4 @@ RPG::Action<>::Func<bool> InspectorWindow::IsOpen() {
 
 void InspectorWindow::SetSelectedGameObject(std::shared_ptr<RPG::GameObject> gameObject) {
 	internal->selectedGameObject = gameObject;
-}
-
-void InspectorWindow::AddPropertyLayout(
-		std::pair<std::string, RPG::Action<std::shared_ptr<RPG::Property>>::Callback> pair) {
-	//TODO: In future double check the key is not already used, maybe we use that to override the default methods
-	internal->variableTypes.insert(pair);
 }
