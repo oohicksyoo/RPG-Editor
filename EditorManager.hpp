@@ -14,7 +14,7 @@ namespace RPG {
 		public:
 			EditorManager(const RPG::SDLWindow& window, SDL_GLContext context);
 			void NewFrame(const RPG::SDLWindow& window);
-			void BuildGUI(std::shared_ptr<RPG::FrameBuffer> frameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy);
+			void BuildGUI(std::shared_ptr<RPG::FrameBuffer> frameBuffer, std::shared_ptr<RPG::FrameBuffer> gameFrameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy);
 			void Render();
 			bool IsGameRunning();
 			void OnGeneralEventData(SDL_Event event);

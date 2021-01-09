@@ -173,11 +173,11 @@ struct EditorManager::Internal {
 		ImGui::NewFrame();
 	}
 
-	void BuildGUI(std::shared_ptr<FrameBuffer> frameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy) {
+	void BuildGUI(std::shared_ptr<FrameBuffer> frameBuffer, std::shared_ptr<RPG::FrameBuffer> gameFrameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy) {
 		ImGuiID dockSpaceID = ImGui::DockSpaceOverViewport();
 
 		sceneWindow->SetFrameBuffer(frameBuffer->GetRenderTextureID());
-		gameWindow->SetFrameBuffer(frameBuffer->GetRenderTextureID());
+		gameWindow->SetFrameBuffer(gameFrameBuffer->GetRenderTextureID());
 		hierarchyWindow->SetHierarchy(hierarchy);
 
 		for (auto&& editorWindow : editorWindows) {
@@ -203,8 +203,8 @@ void EditorManager::NewFrame(const RPG::SDLWindow& window) {
 	internal->NewFrame(window);
 }
 
-void EditorManager::BuildGUI(std::shared_ptr<RPG::FrameBuffer> frameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy) {
-	internal->BuildGUI(frameBuffer, hierarchy);
+void EditorManager::BuildGUI(std::shared_ptr<RPG::FrameBuffer> frameBuffer, std::shared_ptr<RPG::FrameBuffer> gameFrameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy) {
+	internal->BuildGUI(frameBuffer, gameFrameBuffer, hierarchy);
 }
 
 void EditorManager::Render() {
