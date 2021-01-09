@@ -3,6 +3,7 @@
 //
 
 #include "AssetWindow.hpp"
+#include "../engine/core/Log.hpp"
 #include <string>
 #include <iostream>
 #include <filesystem>

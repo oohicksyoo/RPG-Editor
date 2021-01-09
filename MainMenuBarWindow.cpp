@@ -15,6 +15,7 @@ struct MainMenuBarWindow::Internal {
 	RPG::Action<> playToggleAction = {};
 	RPG::Action<>::Func<bool> playToggleFunc = {};
 	bool isShowingSaveModel = false;
+	bool isShowingLoadModel = false;
 	std::string sceneName;
 
 	Internal() {}
@@ -30,6 +31,12 @@ struct MainMenuBarWindow::Internal {
 				if (ImGui::MenuItem("Save", "CTRL+S")) {
 					RPG::Log("Menu Bar", "Save");
 					isShowingSaveModel = true;
+					sceneName = "newscene";
+				}
+
+				if (ImGui::MenuItem("Load", "CTRL+L")) {
+					RPG::Log("Menu Bar", "Load");
+					isShowingLoadModel = true;
 					sceneName = "newscene";
 				}
 
@@ -65,6 +72,7 @@ struct MainMenuBarWindow::Internal {
 			ImGui::EndMainMenuBar();
 		}
 
+		//Save Model
 		if (isShowingSaveModel) {
 			isShowingSaveModel = false;
 			ImGui::OpenPopup("Save Scene Window");
@@ -80,6 +88,33 @@ struct MainMenuBarWindow::Internal {
 
 			if (ImGui::Button("Save") && sceneName != "") {
 				RPG::SceneManager::GetInstance().SaveCurrentScene("assets/scenes/" + sceneName + ".scene");
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Close")) {
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+		ImGui::PopStyleVar();
+
+		//Load Model
+		if (isShowingLoadModel) {
+			isShowingLoadModel = false;
+			ImGui::OpenPopup("Load Scene Window");
+		}
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, {400, 200});
+		if (ImGui::BeginPopupModal("Load Scene Window")) {
+
+			ImGui::InputText("Scene##SceneName", &sceneName);
+
+			std::string sceneFullPath = "assets/scenes/" + sceneName + ".scene";
+			ImGui::TextDisabled(sceneFullPath.c_str());
+
+			if (ImGui::Button("Load") && sceneName != "") {
+				RPG::SceneManager::GetInstance().LoadScene("assets/scenes/" + sceneName + ".scene");
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::SameLine();
