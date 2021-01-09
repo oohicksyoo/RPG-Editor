@@ -4,6 +4,7 @@
 
 #include "MainMenuBarWindow.hpp"
 #include "../engine/core/Log.hpp"
+#include "../engine/core/SceneManager.hpp"
 #include <vector>
 
 using RPG::MainMenuBarWindow;
@@ -13,18 +14,29 @@ struct MainMenuBarWindow::Internal {
 	std::vector<RPG::MainMenuBarEditorWindowToggle> editorWindowToggles;
 	RPG::Action<> playToggleAction = {};
 	RPG::Action<>::Func<bool> playToggleFunc = {};
+	bool isShowingSaveModel = false;
+	std::string sceneName;
 
 	Internal() {}
 
 	void Render(ImGuiID dockID) {
 		if (ImGui::BeginMainMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
-				if (ImGui::MenuItem("Save", "CTRL+S")) {}
+				if (ImGui::MenuItem("New", "CTRL+N")) {
+					RPG::Log("Menu Bar", "New");
+					RPG::SceneManager::GetInstance().CreateNewScene();
+				}
+
+				if (ImGui::MenuItem("Save", "CTRL+S")) {
+					RPG::Log("Menu Bar", "Save");
+					isShowingSaveModel = true;
+					sceneName = "newscene";
+				}
 
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Edit")) {
+			/*if (ImGui::BeginMenu("Edit")) {
 				if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
 				if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
 				ImGui::Separator();
@@ -32,7 +44,7 @@ struct MainMenuBarWindow::Internal {
 				if (ImGui::MenuItem("Copy", "CTRL+C")) {}
 				if (ImGui::MenuItem("Paste", "CTRL+V")) {}
 				ImGui::EndMenu();
-			}
+			}*/
 
 			if (ImGui::BeginMenu("Windows")) {
 				for(auto editorWindowToggle : editorWindowToggles) {
@@ -52,6 +64,32 @@ struct MainMenuBarWindow::Internal {
 
 			ImGui::EndMainMenuBar();
 		}
+
+		if (isShowingSaveModel) {
+			isShowingSaveModel = false;
+			ImGui::OpenPopup("Save Scene Window");
+		}
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, {400, 200});
+		if (ImGui::BeginPopupModal("Save Scene Window")) {
+
+			ImGui::InputText("Scene##SceneName", &sceneName);
+
+			std::string sceneFullPath = "assets/scenes/" + sceneName + ".scene";
+			ImGui::TextDisabled(sceneFullPath.c_str());
+
+			if (ImGui::Button("Save") && sceneName != "") {
+				RPG::SceneManager::GetInstance().SaveCurrentScene("assets/scenes/" + sceneName + ".scene");
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Close")) {
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+		ImGui::PopStyleVar();
 	}
 
 	bool IsOpened() {
