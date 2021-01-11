@@ -3,6 +3,7 @@
 //
 
 #include "InspectorWindow.hpp"
+#include "../engine/application/ApplicationStats.hpp"
 #include "../engine/core/Log.hpp"
 #include "../engine/core/Property.hpp"
 #include "../engine/core/GLMWrapper.hpp"
@@ -71,7 +72,8 @@ struct InspectorWindow::Internal {
 				ImGui::Text("Components");
 				ImGui::Separator();
 				if (ImGui::Selectable("Camera Component")) {
-					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::CameraComponent>(RPG::CameraComponent()));
+					auto size = RPG::ApplicationStats::GetInstance().GetWindowSize();
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::CameraComponent>(RPG::CameraComponent(size.x, size.y)));
 					if (component == nullptr) {
 						RPG::Log("SceneMain", "Failed to add (CameraComponent) component to GameObject");
 					} else {

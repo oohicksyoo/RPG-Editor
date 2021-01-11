@@ -17,12 +17,14 @@ struct GameWindow::Internal {
 		if (!isOpened) return;
 
 		ImGui::SetNextWindowDockID(dockID, ImGuiCond_FirstUseEver);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Game", &isOpened);
 
 		ImVec2 size = ImGui::GetContentRegionAvail();
 		ImGui::Image((void *) (intptr_t) frameBufferID, CalculateContentSize(size), ImVec2{0, 1}, ImVec2{1, 0});
 
 		ImGui::End();
+		ImGui::PopStyleVar();
 	}
 
 	ImVec2 CalculateContentSize(ImVec2 availableSize) {

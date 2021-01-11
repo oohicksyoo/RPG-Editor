@@ -73,6 +73,7 @@ struct EditorManager::Internal {
 		hierarchyWindow = std::make_unique<RPG::HierarchyWindow>();
 		hierarchyWindow->SelectedGameObjectAction([this](std::shared_ptr<RPG::GameObject> gameObject) {
 			inspectorWindow->SetSelectedGameObject(gameObject);
+			sceneWindow->SetSelectedGameObject(gameObject);
 		});
 
 		//Setup AssetWindow
