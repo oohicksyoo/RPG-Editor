@@ -6,6 +6,8 @@
 #include "../engine/application/ApplicationStats.hpp"
 #include "ImGuizmoWrapper.hpp"
 #include "../engine/core/SceneManager.hpp"
+#include "../engine/core/GLMWrapper.hpp"
+#include "EditorStats.hpp"
 
 using RPG::SceneWindow;
 
@@ -33,22 +35,43 @@ struct SceneWindow::Internal {
 		std::shared_ptr<RPG::CameraComponent> camera = RPG::SceneManager::GetInstance().GetCurrentScene()->GetCamera();
 		glm::vec3 cameraPosition = RPG::SceneManager::GetInstance().GetCurrentScene()->GetCameraPosition();
 
-		ImGuizmo::SetDrawlist();
-		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, contentSize.x, contentSize.y);
+		int gizmoTool = RPG::EditorStats::GetInstance().GetGizmoTool();
 
-		if (selectedGameObject != nullptr) {
+		if (selectedGameObject != nullptr && gizmoTool != -1) {
 			glm::mat4 modelMatrix = selectedGameObject->GetTransform()->GetTransformMatrix();
-			if (ImGuizmo::Manipulate(&(camera->GetViewMatrix(cameraPosition))[0][0], &(camera->GetProjectionMatrix())[0][0], ImGuizmo::SCALE, ImGuizmo::LOCAL, &(modelMatrix)[0][0])) {
+
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, contentSize.x, contentSize.y);
+
+			bool snap = true;//Left Control
+			float snapValue = 0.5f;
+
+
+			if (gizmoTool == ImGuizmo::OPERATION::ROTATE) {
+				snapValue = 45.0f;
+			}
+
+			float snapValues[3] = { snapValue, snapValue, snapValue };
+			ImGuizmo::Manipulate(glm::value_ptr(camera->GetViewMatrix(cameraPosition)), glm::value_ptr(camera->GetProjectionMatrix()),
+								 (ImGuizmo::OPERATION)gizmoTool, ImGuizmo::LOCAL, glm::value_ptr(modelMatrix),
+								 nullptr, (snap) ? snapValues : nullptr);
+
+			if (ImGuizmo::IsUsing()) {
 				auto transform = selectedGameObject->GetTransform();
-				float t[3], r[3], s[3];
-				ImGuizmo::DecomposeMatrixToComponents(&(modelMatrix)[0][0], t, r, s);
-				transform->SetPosition({t[0], t[1], t[2]});
-				transform->SetRotation({r[0], r[1], r[2]});
-				transform->SetScale({s[0], s[1], s[2]});
+				glm::vec3 translation, rotation, scale;
+				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(modelMatrix), glm::value_ptr(translation), glm::value_ptr(rotation), glm::value_ptr(scale));
+
+				glm::vec3 currentRotation = transform->GetRotation();
+				glm::vec3 deltaRotation = rotation - currentRotation;
+
+				transform->SetPosition(translation);
+				transform->SetRotation(currentRotation + deltaRotation);
+				transform->SetScale(scale);
 			}
 		}
 
-		ImGuizmo::ViewManipulate(&(camera->GetViewMatrix(cameraPosition))[0][0], 10.0f, ImVec2(ImGui::GetWindowPos().x + contentSize.x - 128, ImGui::GetWindowPos().y), ImVec2(128, 128), 0x10101010);
+		//ImGuizmo::ViewManipulate(&(camera->GetViewMatrix(cameraPosition))[0][0], 10.0f, ImVec2(ImGui::GetWindowPos().x + contentSize.x - 128, ImGui::GetWindowPos().y), ImVec2(128, 128), 0x10101010);
 
 		ImGui::End();
 		ImGui::PopStyleVar();

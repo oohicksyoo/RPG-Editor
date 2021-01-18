@@ -16,6 +16,7 @@
 #include "HierarchyWindow.hpp"
 #include "InspectorWindow.hpp"
 #include "AssetWindow.hpp"
+#include "InputHelperWindow.hpp"
 
 using RPG::EditorManager;
 
@@ -28,6 +29,7 @@ struct EditorManager::Internal {
 	std::shared_ptr<RPG::HierarchyWindow> hierarchyWindow;
 	std::shared_ptr<RPG::InspectorWindow> inspectorWindow;
 	std::shared_ptr<RPG::AssetWindow> assetWindow;
+	std::shared_ptr<RPG::InputHelperWindow> inputHelperWindow;
 
 	Internal(const RPG::SDLWindow& window, SDL_GLContext context) : isGameRunning(false) {
 		RPG::Log("EditorManager", "Starting up the editor");
@@ -79,12 +81,16 @@ struct EditorManager::Internal {
 		//Setup AssetWindow
 		assetWindow = std::make_unique<RPG::AssetWindow>();
 
+		//Setup Input Helper Window
+		inputHelperWindow = std::make_unique<RPG::InputHelperWindow>();
+
 		mainMenuBarWindow = std::make_unique<RPG::MainMenuBarWindow>();
 		mainMenuBarWindow->AddToggleableEditorWindow({"Scene", sceneWindow->ToggleIsOpen(), sceneWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Game", gameWindow->ToggleIsOpen(), gameWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Hierarchy", hierarchyWindow->ToggleIsOpen(), hierarchyWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Inspector", inspectorWindow->ToggleIsOpen(), inspectorWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Assets", assetWindow->ToggleIsOpen(), assetWindow->IsOpen()});
+		mainMenuBarWindow->AddToggleableEditorWindow({"Input Helper", inputHelperWindow->ToggleIsOpen(), inputHelperWindow->IsOpen()});
 		mainMenuBarWindow->PlayToggleAction([this]() {
 			isGameRunning = !isGameRunning;
 		});
@@ -98,6 +104,7 @@ struct EditorManager::Internal {
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(hierarchyWindow));
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(inspectorWindow));
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(assetWindow));
+		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(inputHelperWindow));
 
 		RPG::Log("EditorManager", "Initialization complete");
 	}
