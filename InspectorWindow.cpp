@@ -73,7 +73,7 @@ struct InspectorWindow::Internal {
 				ImGui::Separator();
 				if (ImGui::Selectable("Camera Component")) {
 					auto size = RPG::ApplicationStats::GetInstance().GetWindowSize();
-					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::CameraComponent>(RPG::CameraComponent(size.x, size.y)));
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::CameraComponent>(RPG::CameraComponent(size.x, size.y, selectedGameObject->GetTransform())));
 					if (component == nullptr) {
 						RPG::Log("SceneMain", "Failed to add (CameraComponent) component to GameObject");
 					} else {
@@ -152,6 +152,14 @@ struct InspectorWindow::Internal {
 			std::any prop = property->GetProperty();
 			float v = std::any_cast<float>(prop);
 			if (ImGui::DragFloat(property->GetEditorName().c_str(), (float*)&v)) {
+				property->SetProperty(v);
+			}
+		}});
+
+		RPG::Serializer::GetInstance().AddPropertyLayout({"bool", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			bool v = std::any_cast<bool>(prop);
+			if (ImGui::Checkbox(property->GetEditorName().c_str(), (bool*)&v)) {
 				property->SetProperty(v);
 			}
 		}});
