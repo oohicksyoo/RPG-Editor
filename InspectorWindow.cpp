@@ -81,7 +81,7 @@ struct InspectorWindow::Internal {
 					}
 				}
 				if (ImGui::Selectable("Lua Script Component")) {
-					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::LuaScriptComponent>(RPG::LuaScriptComponent("assets/scripts/Sample.lua")));
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::LuaScriptComponent>(RPG::LuaScriptComponent("assets/scripts/Sample.lua", selectedGameObject)));
 					if (component == nullptr) {
 						RPG::Log("SceneMain", "Failed to add (LuaScriptComponent) component to GameObject");
 					} else {
