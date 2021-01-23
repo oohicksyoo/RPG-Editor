@@ -6,6 +6,7 @@
 #include "ImGUIWrapper.hpp"
 #include "IEditorWindow.hpp"
 #include "../engine/core/Log.hpp"
+#include "../engine/core/SceneManager.hpp"
 #include <vector>
 #include <memory>
 
@@ -93,6 +94,14 @@ struct EditorManager::Internal {
 		mainMenuBarWindow->AddToggleableEditorWindow({"Input Helper", inputHelperWindow->ToggleIsOpen(), inputHelperWindow->IsOpen()});
 		mainMenuBarWindow->PlayToggleAction([this]() {
 			isGameRunning = !isGameRunning;
+
+			if (isGameRunning) {
+				//We need to store the current hierarchy
+				RPG::SceneManager::GetInstance().StoreCurrentScene();
+			} else {
+				//We need to restore the stored hierarchy to reset everything
+				RPG::SceneManager::GetInstance().ReloadCurrentScene();
+			}
 		});
 		mainMenuBarWindow->PlayToggleFunc([this]() -> bool {
 			return isGameRunning;
