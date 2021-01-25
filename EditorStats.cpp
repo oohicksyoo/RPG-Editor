@@ -21,3 +21,14 @@ int EditorStats::GetGizmoTool() {
 void EditorStats::SetGizmoTool(int toolIndex) {
 	gizmoTool = toolIndex;
 }
+
+void EditorStats::AddLog(RPG::LogFile log) {
+	if (logs.size() > 100) {
+		logs.erase(logs.begin());
+	}
+	logs.push_back(log);
+}
+
+std::vector<RPG::LogFile> EditorStats::GetLogs() {
+	return logs;
+}
