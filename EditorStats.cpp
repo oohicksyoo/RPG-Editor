@@ -32,3 +32,11 @@ void EditorStats::AddLog(RPG::LogFile log) {
 std::vector<RPG::LogFile> EditorStats::GetLogs() {
 	return logs;
 }
+
+void EditorStats::SetPayload(RPG::GeneralPayload payload) {
+	generalPayload = payload;
+}
+
+RPG::GeneralPayload EditorStats::GetPayload() {
+	return generalPayload;
+}

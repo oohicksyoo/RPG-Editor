@@ -8,6 +8,9 @@
 #include "../engine/core/SceneManager.hpp"
 #include "../engine/core/GLMWrapper.hpp"
 #include "EditorStats.hpp"
+#include "../engine/core/Log.hpp"
+#include "payloads/ModelPayload.hpp"
+#include "payloads/GeneralPayload.hpp"
 
 using RPG::SceneWindow;
 
@@ -72,6 +75,16 @@ struct SceneWindow::Internal {
 		}
 
 		//ImGuizmo::ViewManipulate(&(camera->GetViewMatrix(cameraPosition))[0][0], 10.0f, ImVec2(ImGui::GetWindowPos().x + contentSize.x - 128, ImGui::GetWindowPos().y), ImVec2(128, 128), 0x10101010);
+
+
+		//Drop - payload Model
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Scene")) {
+				RPG::GeneralPayload p = RPG::EditorStats::GetInstance().GetPayload();
+				RPG::Log("Payload", p.path);
+			}
+			ImGui::EndDragDropTarget();
+		}
 
 		ImGui::End();
 		ImGui::PopStyleVar();

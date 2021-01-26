@@ -3,6 +3,7 @@
 //
 
 #include "InspectorWindow.hpp"
+#include "EditorStats.hpp"
 #include "../engine/application/ApplicationStats.hpp"
 #include "../engine/core/Log.hpp"
 #include "../engine/core/Property.hpp"
@@ -16,6 +17,10 @@
 #include "../engine/core/AssetInventory.hpp"
 #include "../engine/core/Serializer.hpp"
 #include "../engine/core/SceneManager.hpp"
+#include "payloads/ModelPayload.hpp"
+#include "payloads/GameObjectPayload.hpp"
+#include "payloads/GeneralPayload.hpp"
+#include "../engine/core/Singleton.hpp"
 #include <regex>
 
 using RPG::InspectorWindow;
@@ -153,6 +158,19 @@ struct InspectorWindow::Internal {
 			std::string v = std::any_cast<std::string>(prop);
 			if (ImGui::InputText(property->GetEditorName().c_str(), &v)) {
 				property->SetProperty(v);
+			}
+
+			//Dropable Payloads
+			if (property->AllowsDragAndDrop()) {
+				//Drop - payload
+				if (ImGui::BeginDragDropTarget()) {
+					if (ImGui::AcceptDragDropPayload(property->DragAndDropTag().c_str())) {
+						RPG::GeneralPayload p = RPG::EditorStats::GetInstance().GetPayload();
+						RPG::Log("Payload", p.path);
+						property->SetProperty(p.path);
+					}
+					ImGui::EndDragDropTarget();
+				}
 			}
 		}});
 

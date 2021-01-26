@@ -11,6 +11,9 @@
 #include <filesystem>
 #include <regex>
 #include <nlohmann/json.hpp>
+#include "payloads/ModelPayload.hpp"
+#include "payloads/GeneralPayload.hpp"
+#include "EditorStats.hpp"
 
 using RPG::AssetWindow;
 using json = nlohmann::json;
@@ -52,7 +55,51 @@ struct AssetWindow::Internal {
 				flags |= ImGuiTreeNodeFlags_Leaf;
 			}
 
-			bool isOpened = ImGui::TreeNodeEx(entry.path().string().c_str(), flags, entry.path().filename().string().c_str());
+			std::string labelName = entry.path().string() + "##" + entry.path().string();
+ 			bool isOpened = ImGui::TreeNodeEx(labelName.c_str(), flags, entry.path().filename().string().c_str());
+
+			if (!entry.is_directory() && entry.path().has_extension()) {
+				if (entry.path().extension().string() == ".obj") {
+					//Drag - payload Model
+					if (ImGui::BeginDragDropSource()) {
+						RPG::GeneralPayload payload = RPG::GeneralPayload();
+						payload.path = FixFilePath(entry.path().string());
+
+						RPG::EditorStats::GetInstance().SetPayload(payload);
+
+						ImGui::SetDragDropPayload("Model", NULL, 0);
+						std::string str = "Model: " + payload.path;
+						ImGui::Text(str.c_str());
+						ImGui::EndDragDropSource();
+					}
+				} else if (entry.path().extension().string() == ".png") {
+					//Drag - payload Texture
+					if (ImGui::BeginDragDropSource()) {
+						RPG::GeneralPayload payload = RPG::GeneralPayload();
+						payload.path = FixFilePath(entry.path().string());
+
+						RPG::EditorStats::GetInstance().SetPayload(payload);
+
+						ImGui::SetDragDropPayload("Texture", NULL, 0);
+						std::string str = "Texture: " + payload.path;
+						ImGui::Text(str.c_str());
+						ImGui::EndDragDropSource();
+					}
+				} else if (entry.path().extension().string() == ".scene") {
+					//Drag - payload Scene
+					if (ImGui::BeginDragDropSource()) {
+						RPG::GeneralPayload payload = RPG::GeneralPayload();
+						payload.path = FixFilePath(entry.path().string());
+
+						RPG::EditorStats::GetInstance().SetPayload(payload);
+
+						ImGui::SetDragDropPayload("Scene", NULL, 0);
+						std::string str = "Scene: " + payload.path;
+						ImGui::Text(str.c_str());
+						ImGui::EndDragDropSource();
+					}
+				}
+			}
 
 			if (isOpened) {
 				if (entry.is_directory()) {
@@ -63,6 +110,15 @@ struct AssetWindow::Internal {
 		}
 	}
 
+	std::string FixFilePath(std::string value) {
+		for (int i = 0; i < value.length(); ++i) {
+			if (value[i] == '\\') {
+				value[i] = '/';
+			}
+		}
+		return value;
+	}
+
 	void PreformSync() {
 		json j = json::object();
 		auto models = json::array();
@@ -71,13 +127,7 @@ struct AssetWindow::Internal {
 			if (entry.path().has_extension() && entry.path().extension().string() != ".obj")
 				continue;
 
-			std::string s = entry.path().string();
-			for (int i = 0; i < s.length(); ++i) {
-				if (s[i] == '\\') {
-					s[i] = '/';
-				}
-			}
-
+			std::string s = FixFilePath(entry.path().string());
 			RPG::Content::GetInstance().Load<RPG::Mesh>(s);
 			models.push_back(s);
 		}

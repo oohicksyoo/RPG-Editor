@@ -5,6 +5,7 @@
 #pragma once
 #include "../engine/core/Singleton.hpp"
 #include "LogFile.hpp"
+#include "payloads/GeneralPayload.hpp"
 #include <vector>
 
 namespace RPG {
@@ -18,10 +19,13 @@ namespace RPG {
 			int GetGizmoTool();
 			void AddLog(RPG::LogFile log);
 			std::vector<RPG::LogFile> GetLogs();
+			void SetPayload(RPG::GeneralPayload payload);
+			RPG::GeneralPayload GetPayload();
 
 		private:
 			int gizmoTool = -1;
 			std::vector<RPG::LogFile> logs;
+			RPG::GeneralPayload generalPayload;
 
 	};
 }
