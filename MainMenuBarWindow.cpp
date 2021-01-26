@@ -28,10 +28,9 @@ struct MainMenuBarWindow::Internal {
 					RPG::SceneManager::GetInstance().CreateNewScene();
 				}
 
-				if (ImGui::MenuItem("Save", "CTRL+S")) {
+				if (ImGui::MenuItem("Save", "CTRL+S", false, RPG::SceneManager::GetInstance().HasCurrentScenePath())) {
 					RPG::Log("Menu Bar", "Save");
-					//RPG::SceneManager::GetInstance().SaveCurrentScene("");
-					//We need to load in the scenes file path so we know where we can save to
+					RPG::SceneManager::GetInstance().SaveCurrentScene();
 				}
 
 				if (ImGui::MenuItem("Save As", "CTRL+Shift+S")) {
