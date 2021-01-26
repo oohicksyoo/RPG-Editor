@@ -30,6 +30,12 @@ struct MainMenuBarWindow::Internal {
 
 				if (ImGui::MenuItem("Save", "CTRL+S")) {
 					RPG::Log("Menu Bar", "Save");
+					//RPG::SceneManager::GetInstance().SaveCurrentScene("");
+					//We need to load in the scenes file path so we know where we can save to
+				}
+
+				if (ImGui::MenuItem("Save As", "CTRL+Shift+S")) {
+					RPG::Log("Menu Bar", "Save As");
 					isShowingSaveModel = true;
 					sceneName = "newscene";
 				}
