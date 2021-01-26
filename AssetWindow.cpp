@@ -98,6 +98,19 @@ struct AssetWindow::Internal {
 						ImGui::Text(str.c_str());
 						ImGui::EndDragDropSource();
 					}
+				} else if (entry.path().extension().string() == ".lua") {
+					//Drag - payload Lua
+					if (ImGui::BeginDragDropSource()) {
+						RPG::GeneralPayload payload = RPG::GeneralPayload();
+						payload.path = FixFilePath(entry.path().string());
+
+						RPG::EditorStats::GetInstance().SetPayload(payload);
+
+						ImGui::SetDragDropPayload("Lua", NULL, 0);
+						std::string str = "Lua: " + payload.path;
+						ImGui::Text(str.c_str());
+						ImGui::EndDragDropSource();
+					}
 				}
 			}
 

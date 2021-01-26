@@ -82,6 +82,7 @@ struct SceneWindow::Internal {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Scene")) {
 				RPG::GeneralPayload p = RPG::EditorStats::GetInstance().GetPayload();
 				RPG::Log("Payload", p.path);
+				RPG::SceneManager::GetInstance().LoadScene(p.path);
 			}
 			ImGui::EndDragDropTarget();
 		}
