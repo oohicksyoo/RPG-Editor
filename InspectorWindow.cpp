@@ -91,7 +91,7 @@ struct InspectorWindow::Internal {
 					}
 				}
 				if (ImGui::Selectable("Mesh Component")) {
-					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::MeshComponent>(RPG::MeshComponent(RPG::Assets::StaticMesh::Crate, RPG::Assets::Texture::Crate)));
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::MeshComponent>(RPG::MeshComponent("", "")));
 					if (component == nullptr) {
 						RPG::Log("SceneMain", "Failed to add (MeshComponent) component to GameObject");
 					} else {
@@ -99,7 +99,7 @@ struct InspectorWindow::Internal {
 					}
 				}
 				if (ImGui::Selectable("Sprite Component")) {
-					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::SpriteComponent>(RPG::SpriteComponent(RPG::Assets::Texture::Crate)));
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::SpriteComponent>(RPG::SpriteComponent("")));
 					if (component == nullptr) {
 						RPG::Log("SceneMain", "Failed to add (SpriteComponent) component to GameObject");
 					} else {
