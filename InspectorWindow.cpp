@@ -15,6 +15,7 @@
 #include "../engine/core/Action.hpp"
 #include "../engine/core/AssetInventory.hpp"
 #include "../engine/core/Serializer.hpp"
+#include "../engine/core/SceneManager.hpp"
 #include <regex>
 
 using RPG::InspectorWindow;
@@ -119,6 +120,12 @@ struct InspectorWindow::Internal {
 
 		//Deleting GameObject and preforming cleanup
 		if (isDeleted) {
+			if (!selectedGameObject->HasParent()) {
+				//Was part of our main hierarchy
+				auto hierarchy = RPG::SceneManager::GetInstance().GetCurrentScene()->GetHierarchy();
+				hierarchy->Remove(selectedGameObject);
+			}
+
 			selectedGameObject->SetParent(selectedGameObject, nullptr); //Clear my parent relation ship; deleting children as well
 			//TODO: Currently if anyone has a reference to the pointer it doesnt get shut down right away
 			//Deleting a child for example with release at the end of the application and not right away
