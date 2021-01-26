@@ -58,17 +58,28 @@ struct InspectorWindow::Internal {
 
 		//Render Current Components
 		{
+			std::string removedComponent = "";
 			for (auto component : selectedGameObject->GetComponents()) {
 				ImGui::Separator();
 				ImGui::BeginGroup();
 				std::string name = SplitName(component->Name()) + "##" + component->Guid();
 				if (ImGui::CollapsingHeader(name.c_str())) {
+					if (component->Name() != "TransformComponent") {
+						if (ImGui::Button("Remove")) {
+							removedComponent = component->Guid();
+						}
+					}
+
 					//Render Component Internals
 					for (auto property : component->GetProperties()) {
 						RenderProperty(property);
 					}
 				}
 				ImGui::EndGroup();
+			}
+
+			if (removedComponent != "") {
+				selectedGameObject->RemoveComponent(removedComponent);
 			}
 		}
 
