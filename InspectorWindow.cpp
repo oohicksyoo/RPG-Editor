@@ -205,26 +205,6 @@ struct InspectorWindow::Internal {
 				property->SetProperty(v);
 			}
 		}});
-
-		RPG::Serializer::GetInstance().AddPropertyLayout({"RPG::Assets::StaticMesh", [](std::shared_ptr<RPG::Property> property) {
-			std::any prop = property->GetProperty();
-			RPG::Assets::StaticMesh v = std::any_cast<RPG::Assets::StaticMesh>(prop);
-			int num = static_cast<int>(v);
-			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Quad\0Crate\0Cube\0\0")) {
-				v = static_cast<RPG::Assets::StaticMesh>(num);
-				property->SetProperty(v);
-			}
-		}});
-
-		RPG::Serializer::GetInstance().AddPropertyLayout({"RPG::Assets::Texture", [](std::shared_ptr<RPG::Property> property) {
-			std::any prop = property->GetProperty();
-			RPG::Assets::Texture v = std::any_cast<RPG::Assets::Texture>(prop);
-			int num = static_cast<int>(v);
-			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Crate\0Sprite\0Default\0Collider\0Trigger\0Water\0\0")) {
-				v = static_cast<RPG::Assets::Texture>(num);
-				property->SetProperty(v);
-			}
-		}});
 	}
 
 	std::string SplitName(std::string name) {
