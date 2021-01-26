@@ -213,7 +213,7 @@ struct InspectorWindow::Internal {
 			std::any prop = property->GetProperty();
 			RPG::Assets::Texture v = std::any_cast<RPG::Assets::Texture>(prop);
 			int num = static_cast<int>(v);
-			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Crate\0Sprite\0Default\0Collider\0Trigger\0\0")) {
+			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Crate\0Sprite\0Default\0Collider\0Trigger\0Water\0\0")) {
 				v = static_cast<RPG::Assets::Texture>(num);
 				property->SetProperty(v);
 			}
