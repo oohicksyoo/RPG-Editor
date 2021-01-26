@@ -159,6 +159,22 @@ struct InspectorWindow::Internal {
 			if (ImGui::InputText(property->GetEditorName().c_str(), &v)) {
 				property->SetProperty(v);
 			}
+		}});
+
+		RPG::Serializer::GetInstance().AddPropertyLayout({"RPG::Resource::String", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			std::string v = std::any_cast<std::string>(prop);
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75, 0.75, 0.75, 1));
+			std::string id = "##" + property->GetGuid();
+			ImGui::InputText(id.c_str(), &v, ImGuiInputTextFlags_ReadOnly);
+			ImGui::PopStyleColor();
+
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Text(v.c_str());
+				ImGui::EndTooltip();
+			}
 
 			//Dropable Payloads
 			if (property->AllowsDragAndDrop()) {
@@ -172,6 +188,9 @@ struct InspectorWindow::Internal {
 					ImGui::EndDragDropTarget();
 				}
 			}
+
+			ImGui::SameLine();
+			ImGui::Text(property->GetName().c_str(), property->GetEditorName().c_str());
 		}});
 
 		RPG::Serializer::GetInstance().AddPropertyLayout({"int", [](std::shared_ptr<RPG::Property> property) {
