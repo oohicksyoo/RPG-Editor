@@ -40,3 +40,12 @@ void EditorStats::SetPayload(RPG::GeneralPayload payload) {
 RPG::GeneralPayload EditorStats::GetPayload() {
 	return generalPayload;
 }
+
+void EditorStats::SetSceneScreenRect(glm::vec4 rect) {
+	sceneScreenRect = rect;
+}
+
+bool EditorStats::IsMouseInSceneScreen(glm::vec2 mousePosition) {
+	return mousePosition.x >= sceneScreenRect.x && mousePosition.x <= sceneScreenRect.x + sceneScreenRect.z &&
+			mousePosition.y >= sceneScreenRect.y && mousePosition.y <= sceneScreenRect.y + sceneScreenRect.w;
+}

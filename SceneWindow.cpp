@@ -31,6 +31,10 @@ struct SceneWindow::Internal {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Scene", &isOpened);
 
+		auto windowPosition = ImGui::GetWindowPos();
+		auto windowSize = ImGui::GetWindowSize();
+		RPG::EditorStats::GetInstance().SetSceneScreenRect(glm::vec4{windowPosition.x, windowPosition.y, windowSize.x, windowSize.y});
+
 		ImVec2 size = ImGui::GetContentRegionAvail();
 		ImVec2 contentSize = CalculateContentSize(size);
 		ImGui::Image((void *) (intptr_t) frameBufferID, contentSize, ImVec2{0, 1}, ImVec2{1, 0});
