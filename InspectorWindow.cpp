@@ -21,6 +21,8 @@
 #include "payloads/GameObjectPayload.hpp"
 #include "payloads/GeneralPayload.hpp"
 #include "../engine/core/Singleton.hpp"
+#include "../engine/core/Texture.hpp"
+#include "../engine/core/Content.hpp"
 #include <regex>
 
 using RPG::InspectorWindow;
@@ -202,6 +204,14 @@ struct InspectorWindow::Internal {
 
 			ImGui::SameLine();
 			ImGui::Text(property->GetName().c_str(), property->GetEditorName().c_str());
+
+			if (property->DragAndDropTag() == "Texture") {
+				std::string texturePath = std::any_cast<std::string>(property->GetProperty());
+				uint32_t id = RPG::Content::GetInstance().GetTextureID(texturePath);
+				if (id != -1) {
+					ImGui::Image((void *) (intptr_t) id, ImVec2{50,50}, ImVec2{0, 1}, ImVec2{1, 0}, ImVec4{1,1,1,1}, ImVec4(1,1,1,1));
+				}
+			}
 		}});
 
 		RPG::Serializer::GetInstance().AddPropertyLayout({"int", [](std::shared_ptr<RPG::Property> property) {
