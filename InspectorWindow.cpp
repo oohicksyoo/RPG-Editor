@@ -13,6 +13,7 @@
 #include "../engine/core/components/MeshComponent.hpp"
 #include "../engine/core/components/SpriteComponent.hpp"
 #include "../engine/core/components/BoxColliderComponent.hpp"
+#include "../engine/core/components/PhysicsComponent.hpp"
 #include "../engine/core/Action.hpp"
 #include "../engine/core/AssetInventory.hpp"
 #include "../engine/core/Serializer.hpp"
@@ -128,6 +129,14 @@ struct InspectorWindow::Internal {
 					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::BoxColliderComponent>(RPG::BoxColliderComponent(glm::vec3{1, 1, 1}, false)));
 					if (component == nullptr) {
 						RPG::Log("SceneMain", "Failed to add (Box Collider) component to GameObject");
+					} else {
+						RPG::Log("SceneMain", "Added (" + component->Name() + ") component to GameObject");
+					}
+				}
+				if (ImGui::Selectable("Physics Component")) {
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::PhysicsComponent>(RPG::PhysicsComponent(selectedGameObject->GetTransform())));
+					if (component == nullptr) {
+						RPG::Log("SceneMain", "Failed to add (Physics) component to GameObject");
 					} else {
 						RPG::Log("SceneMain", "Added (" + component->Name() + ") component to GameObject");
 					}
@@ -260,6 +269,16 @@ struct InspectorWindow::Internal {
 			int num = static_cast<int>(v);
 			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Perspective\0Orthographic\0\0")) {
 				v = static_cast<RPG::CameraType>(num);
+				property->SetProperty(v);
+			}
+		}});
+
+		RPG::Serializer::GetInstance().AddPropertyLayout({"RPG::PhysicsShape", [](std::shared_ptr<RPG::Property> property) {
+			std::any prop = property->GetProperty();
+			RPG::PhysicsShape v = std::any_cast<RPG::PhysicsShape>(prop);
+			int num = static_cast<int>(v);
+			if (ImGui::Combo(property->GetEditorName().c_str(), &num, "Circle\0Capsule\0\0")) {
+				v = static_cast<RPG::PhysicsShape>(num);
 				property->SetProperty(v);
 			}
 		}});
