@@ -234,7 +234,7 @@ struct InspectorWindow::Internal {
 		RPG::Serializer::GetInstance().AddPropertyLayout({"float", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			float v = std::any_cast<float>(prop);
-			if (ImGui::DragFloat(property->GetEditorName().c_str(), (float*)&v)) {
+			if (ImGui::DragFloat(property->GetEditorName().c_str(), (float*)&v, 0.05f)) {
 				property->SetProperty(v);
 			}
 		}});
@@ -250,7 +250,7 @@ struct InspectorWindow::Internal {
 		RPG::Serializer::GetInstance().AddPropertyLayout({"glm::vec2", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			glm::vec2 v = std::any_cast<glm::vec2>(prop);
-			if (ImGui::DragFloat2(property->GetEditorName().c_str(), (float*)&v)) {
+			if (ImGui::DragFloat2(property->GetEditorName().c_str(), (float*)&v, 0.05f)) {
 				property->SetProperty(v);
 			}
 		}});
@@ -258,7 +258,7 @@ struct InspectorWindow::Internal {
 		RPG::Serializer::GetInstance().AddPropertyLayout({"glm::vec3", [](std::shared_ptr<RPG::Property> property) {
 			std::any prop = property->GetProperty();
 			glm::vec3 v = std::any_cast<glm::vec3>(prop);
-			if (ImGui::DragFloat3(property->GetEditorName().c_str(), (float*)&v)) {
+			if (ImGui::DragFloat3(property->GetEditorName().c_str(), (float*)&v, 0.05f)) {
 				property->SetProperty(v);
 			}
 		}});
