@@ -5,6 +5,8 @@
 #include "HierarchyWindow.hpp"
 #include "../engine/core/Log.hpp"
 #include "payloads/GameObjectPayload.hpp"
+#include "EditorStats.hpp"
+#include "../engine/core/Serializer.hpp"
 
 using RPG::HierarchyWindow;
 
@@ -34,6 +36,24 @@ struct HierarchyWindow::Internal {
 				hierarchy->Add(std::make_unique<RPG::GameObject>(RPG::GameObject()));
 				ImGui::CloseCurrentPopup();
 			}
+
+			auto selected = RPG::EditorStats::GetInstance().GetSelectedGameObject();
+			if (selected != nullptr) {
+				std::string s = "Duplicate \"" + selected->GetName() + "\"";
+				if (ImGui::Button(s.c_str())) {
+					auto j = RPG::Serializer::GetInstance().SaveGameObject(selectedGameObject);
+					auto go = RPG::Serializer::GetInstance().LoadGameObject(j, true);
+					auto parent = selectedGameObject->GetParent();
+					if (parent != nullptr) {
+						go->SetParent(go, parent);
+					} else {
+						hierarchy->Add(go);
+					}
+
+					ImGui::CloseCurrentPopup();
+				}
+			}
+
 			ImGui::EndPopup();
 		}
 
