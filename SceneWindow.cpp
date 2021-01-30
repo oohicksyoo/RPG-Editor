@@ -11,6 +11,7 @@
 #include "../engine/core/Log.hpp"
 #include "payloads/ModelPayload.hpp"
 #include "payloads/GeneralPayload.hpp"
+#include "../engine/core/Input/InputManager.hpp"
 
 using RPG::SceneWindow;
 
@@ -40,7 +41,6 @@ struct SceneWindow::Internal {
 		ImGui::Image((void *) (intptr_t) frameBufferID, contentSize, ImVec2{0, 1}, ImVec2{1, 0});
 
 		std::shared_ptr<RPG::CameraComponent> camera = RPG::SceneManager::GetInstance().GetCurrentScene()->GetCamera();
-		glm::vec3 cameraPosition = RPG::SceneManager::GetInstance().GetCurrentScene()->GetCameraPosition();
 
 		int gizmoTool = RPG::EditorStats::GetInstance().GetGizmoTool();
 
@@ -51,7 +51,7 @@ struct SceneWindow::Internal {
 			ImGuizmo::SetDrawlist();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, contentSize.x, contentSize.y);
 
-			bool snap = true;//Left Control
+			bool snap = RPG::InputManager::GetInstance().IsKeyDown(RPG::Input::Key::LeftAlt);
 			float snapValue = 0.5f;
 
 
@@ -60,19 +60,20 @@ struct SceneWindow::Internal {
 			}
 
 			float snapValues[3] = { snapValue, snapValue, snapValue };
-			ImGuizmo::Manipulate(glm::value_ptr(camera->GetViewMatrix(cameraPosition)), glm::value_ptr(camera->GetProjectionMatrix()),
+			ImGuizmo::Manipulate(glm::value_ptr(camera->GetViewMatrix()), glm::value_ptr(camera->GetProjectionMatrix()),
 								 (ImGuizmo::OPERATION)gizmoTool, ImGuizmo::LOCAL, glm::value_ptr(modelMatrix),
 								 nullptr, (snap) ? snapValues : nullptr);
 
 			if (ImGuizmo::IsUsing()) {
 				auto transform = selectedGameObject->GetTransform();
-				glm::vec3 translation, rotation, scale;
-				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(modelMatrix), glm::value_ptr(translation), glm::value_ptr(rotation), glm::value_ptr(scale));
+				glm::vec3 position, rotation, scale;
+				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(modelMatrix), glm::value_ptr(position), glm::value_ptr(rotation), glm::value_ptr(scale));
 
 				glm::vec3 currentRotation = transform->GetRotation();
 				glm::vec3 deltaRotation = rotation - currentRotation;
 
-				transform->SetPosition(translation);
+				transform->SetPosition(position);
+				//transform->SetWorldPosition(position);
 				transform->SetRotation(currentRotation + deltaRotation);
 				transform->SetScale(scale);
 			}
