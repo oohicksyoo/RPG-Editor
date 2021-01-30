@@ -37,6 +37,22 @@ struct HierarchyWindow::Internal {
 			ImGui::EndPopup();
 		}
 
+		ImGui::Separator();
+		//Drop - payload
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GameObject")) {
+				IM_ASSERT(payload->DataSize == sizeof(RPG::GameObjectPayload));
+				RPG::Log("Hierarchy Window" , "Payload for a GameObject arrived");
+				RPG::GameObjectPayload p = *(const RPG::GameObjectPayload*)payload->Data;
+				if (!p.gameObject->HasParent()) {
+					hierarchy->Remove(p.gameObject);
+				}
+				p.gameObject->SetParent(p.gameObject, nullptr);
+				hierarchy->Add(p.gameObject);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
 		ImGui::End();
 	}
 
