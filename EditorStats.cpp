@@ -49,3 +49,11 @@ bool EditorStats::IsMouseInSceneScreen(glm::vec2 mousePosition) {
 	return mousePosition.x >= sceneScreenRect.x && mousePosition.x <= sceneScreenRect.x + sceneScreenRect.z &&
 			mousePosition.y >= sceneScreenRect.y && mousePosition.y <= sceneScreenRect.y + sceneScreenRect.w;
 }
+
+void EditorStats::SetSelectedGameObject(std::shared_ptr<RPG::GameObject> gameObject) {
+	selectedGameObject = gameObject;
+}
+
+std::shared_ptr<RPG::GameObject> EditorStats::GetSelectedGameObject() {
+	return selectedGameObject;
+}

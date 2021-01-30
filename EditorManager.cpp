@@ -19,6 +19,7 @@
 #include "AssetWindow.hpp"
 #include "InputHelperWindow.hpp"
 #include "ConsoleWindow.hpp"
+#include "EditorStats.hpp"
 
 using RPG::EditorManager;
 
@@ -77,6 +78,7 @@ struct EditorManager::Internal {
 		//Setup Hierarchy Window
 		hierarchyWindow = std::make_unique<RPG::HierarchyWindow>();
 		hierarchyWindow->SelectedGameObjectAction([this](std::shared_ptr<RPG::GameObject> gameObject) {
+			RPG::EditorStats::GetInstance().SetSelectedGameObject(gameObject);
 			inspectorWindow->SetSelectedGameObject(gameObject);
 			sceneWindow->SetSelectedGameObject(gameObject);
 		});

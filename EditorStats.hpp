@@ -5,6 +5,7 @@
 #pragma once
 #include "../engine/core/Singleton.hpp"
 #include "../engine/core/GLMWrapper.hpp"
+#include "../engine/core/GameObject.hpp"
 #include "LogFile.hpp"
 #include "payloads/GeneralPayload.hpp"
 #include <vector>
@@ -24,12 +25,15 @@ namespace RPG {
 			RPG::GeneralPayload GetPayload();
 			void SetSceneScreenRect(glm::vec4 rect);
 			bool IsMouseInSceneScreen(glm::vec2 mousePosition);
+			void SetSelectedGameObject(std::shared_ptr<RPG::GameObject> gameObject);
+			std::shared_ptr<RPG::GameObject> GetSelectedGameObject();
 
 		private:
 			int gizmoTool = -1;
 			std::vector<RPG::LogFile> logs;
 			RPG::GeneralPayload generalPayload;
 			glm::vec4 sceneScreenRect;
+			std::shared_ptr<RPG::GameObject> selectedGameObject;
 			//TODO: GLM 4 that set by Scene Window so we can determine if the mouse position is inside of the scene view when doing shit
 
 	};
