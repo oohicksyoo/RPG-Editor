@@ -99,7 +99,7 @@ struct EditorManager::Internal {
 		mainMenuBarWindow->AddToggleableEditorWindow({"Inspector", inspectorWindow->ToggleIsOpen(), inspectorWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Assets", assetWindow->ToggleIsOpen(), assetWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Input Helper", inputHelperWindow->ToggleIsOpen(), inputHelperWindow->IsOpen()});
-		mainMenuBarWindow->AddToggleableEditorWindow({"Console", consoleWindow->ToggleIsOpen(), consoleWindow->IsOpen()});
+		//mainMenuBarWindow->AddToggleableEditorWindow({"Console", consoleWindow->ToggleIsOpen(), consoleWindow->IsOpen()});
 		mainMenuBarWindow->PlayToggleAction([this]() {
 			isGameRunning = !isGameRunning;
 
@@ -122,7 +122,7 @@ struct EditorManager::Internal {
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(inspectorWindow));
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(assetWindow));
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(inputHelperWindow));
-		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(consoleWindow));
+		//editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(consoleWindow));
 
 		RPG::Log("EditorManager", "Initialization complete");
 	}
