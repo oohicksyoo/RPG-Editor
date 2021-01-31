@@ -67,6 +67,10 @@ struct InspectorWindow::Internal {
 				ImGui::BeginGroup();
 				std::string name = SplitName(component->Name()) + "##" + component->Guid();
 				if (ImGui::CollapsingHeader(name.c_str())) {
+					ImGui::TextDisabled(component->Guid().c_str());
+					ImGui::SameLine();
+					ImGui::Text("Guid");
+
 					if (component->Name() != "TransformComponent") {
 						if (ImGui::Button("Remove")) {
 							removedComponent = component->Guid();
