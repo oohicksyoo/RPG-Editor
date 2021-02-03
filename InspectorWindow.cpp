@@ -138,7 +138,9 @@ struct InspectorWindow::Internal {
 					}
 				}
 				if (ImGui::Selectable("Physics Component")) {
-					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::PhysicsComponent>(RPG::PhysicsComponent(selectedGameObject->GetTransform())));
+					std::shared_ptr<RPG::IComponent> component = selectedGameObject->AddComponent(std::make_unique<RPG::PhysicsComponent>(RPG::PhysicsComponent(selectedGameObject->GetTransform(), [this]() -> std::vector<std::shared_ptr<RPG::IComponent>> {
+						return selectedGameObject->GetLuaScripts();
+					})));
 					if (component == nullptr) {
 						RPG::Log("SceneMain", "Failed to add (Physics) component to GameObject");
 					} else {
