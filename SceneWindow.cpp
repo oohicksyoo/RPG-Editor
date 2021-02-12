@@ -53,7 +53,8 @@ struct SceneWindow::Internal {
 		vMax.x = vMin.x + contentSize.x;
 		vMax.y = vMin.y + contentSize.y;
 
-		ImGui::GetForegroundDrawList()->AddRect( vMin, vMax, IM_COL32( 255, 255, 0, 255 ) );
+		//For Testing
+		//ImGui::GetForegroundDrawList()->AddRect( vMin, vMax, IM_COL32( 255, 255, 0, 255 ) );
 
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::SetDrawlist();
