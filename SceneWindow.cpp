@@ -44,12 +44,25 @@ struct SceneWindow::Internal {
 
 		int gizmoTool = RPG::EditorStats::GetInstance().GetGizmoTool();
 
-		if (selectedGameObject != nullptr && gizmoTool != -1) {
-			glm::mat4 modelMatrix = selectedGameObject->GetTransform()->GetTransformMatrix();
+		// Yellow is content region min/max
+		ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+		ImVec2 vMax;
 
-			ImGuizmo::SetOrthographic(false);
-			ImGuizmo::SetDrawlist();
-			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, contentSize.x, contentSize.y);
+		vMin.x += ImGui::GetWindowPos().x;
+		vMin.y += ImGui::GetWindowPos().y;
+		vMax.x = vMin.x + contentSize.x;
+		vMax.y = vMin.y + contentSize.y;
+
+		ImGui::GetForegroundDrawList()->AddRect( vMin, vMax, IM_COL32( 255, 255, 0, 255 ) );
+
+		ImGuizmo::SetOrthographic(false);
+		ImGuizmo::SetDrawlist();
+		ImGuizmo::SetRect(vMin.x, vMin.y, contentSize.x, contentSize.y);
+		ImGuizmo::DrawGrid(glm::value_ptr(camera->GetViewMatrix()), glm::value_ptr(camera->GetProjectionMatrix()), glm::value_ptr(identity), 200.0f);
+
+		if (selectedGameObject != nullptr && gizmoTool != -1) {
+			auto transform = selectedGameObject->GetTransform();
+			glm::mat4 modelMatrix = transform->GetTransformMatrix();
 
 			bool snap = RPG::InputManager::GetInstance().IsKeyDown(RPG::Input::Key::LeftAlt);
 			float snapValue = 0.5f;
@@ -60,27 +73,31 @@ struct SceneWindow::Internal {
 			}
 
 			float snapValues[3] = { snapValue, snapValue, snapValue };
-			ImGuizmo::Manipulate(glm::value_ptr(camera->GetViewMatrix()), glm::value_ptr(camera->GetProjectionMatrix()),
-								 (ImGuizmo::OPERATION)gizmoTool, ImGuizmo::LOCAL, glm::value_ptr(modelMatrix),
-								 nullptr, (snap) ? snapValues : nullptr);
+
+			float tmpMatrix[16];
+			ImGuizmo::RecomposeMatrixFromComponents(glm::value_ptr(transform->GetPosition()), glm::value_ptr(transform->GetRotation()), glm::value_ptr(transform->GetScale()), tmpMatrix);
+			ImGuizmo::Manipulate(glm::value_ptr(camera->GetViewMatrix()), glm::value_ptr(camera->GetProjectionMatrix()), (ImGuizmo::OPERATION)gizmoTool, ImGuizmo::MODE::LOCAL, tmpMatrix);
 
 			if (ImGuizmo::IsUsing()) {
 				auto transform = selectedGameObject->GetTransform();
-				glm::vec3 position, rotation, scale;
-				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(modelMatrix), glm::value_ptr(position), glm::value_ptr(rotation), glm::value_ptr(scale));
+				float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+				ImGuizmo::DecomposeMatrixToComponents(tmpMatrix, matrixTranslation, matrixRotation, matrixScale);
 
-				glm::vec3 currentRotation = transform->GetRotation();
-				glm::vec3 deltaRotation = rotation - currentRotation;
-
-				transform->SetPosition(position);
-				//transform->SetWorldPosition(position);
-				transform->SetRotation(currentRotation + deltaRotation);
-				transform->SetScale(scale);
+				switch (gizmoTool) {
+					case ImGuizmo::OPERATION::TRANSLATE:
+						transform->SetPosition(glm::vec3{matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]});
+						break;
+					case ImGuizmo::OPERATION::ROTATE:
+						transform->SetRotation(glm::vec3{matrixRotation[0], matrixRotation[1], matrixRotation[2]});
+						break;
+					case ImGuizmo::OPERATION::SCALE:
+						transform->SetScale(glm::vec3{matrixScale[0], matrixScale[1], matrixScale[2]});
+						break;
+					default:
+						break;
+				}
 			}
 		}
-
-		//ImGuizmo::ViewManipulate(&(camera->GetViewMatrix(cameraPosition))[0][0], 10.0f, ImVec2(ImGui::GetWindowPos().x + contentSize.x - 128, ImGui::GetWindowPos().y), ImVec2(128, 128), 0x10101010);
-
 
 		//Drop - payload Model
 		if (ImGui::BeginDragDropTarget()) {
