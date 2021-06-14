@@ -48,6 +48,24 @@ struct AssetWindow::Internal {
 			if (entry.path().has_extension() && entry.path().extension().string() == ".md")
 				continue;
 
+            if (entry.path().has_extension() && entry.path().extension().string() == ".ts")
+                continue;
+
+			if (entry.is_directory() && entry.path().stem().string() == "node_modules")
+			    continue;
+
+			if (entry.path().stem().string() == "package" && entry.path().has_extension() && entry.path().extension().string() == ".json")
+                continue;
+
+            if (entry.path().stem().string() == "package-lock" && entry.path().has_extension() && entry.path().extension().string() == ".json")
+                continue;
+
+            if (entry.path().stem().string() == "tsconfig" && entry.path().has_extension() && entry.path().extension().string() == ".json")
+                continue;
+
+            if (entry.path().stem().string() == "_help" && entry.path().has_extension() && entry.path().extension().string() == ".txt")
+                continue;
+
 			flags = ImGuiTreeNodeFlags_None;
 			if (entry.is_directory()) {
 				flags |= ImGuiTreeNodeFlags_OpenOnArrow;
