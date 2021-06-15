@@ -59,7 +59,6 @@ struct SceneWindow::Internal {
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::SetDrawlist();
 		ImGuizmo::SetRect(vMin.x, vMin.y, contentSize.x, contentSize.y);
-		ImGuizmo::DrawGrid(glm::value_ptr(camera->GetViewMatrix()), glm::value_ptr(camera->GetProjectionMatrix()), glm::value_ptr(identity), 200.0f);
 
 		if (selectedGameObject != nullptr && gizmoTool != -1) {
 			auto transform = selectedGameObject->GetTransform();
