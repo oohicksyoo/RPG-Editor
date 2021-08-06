@@ -20,6 +20,7 @@
 #include "InputHelperWindow.hpp"
 #include "ConsoleWindow.hpp"
 #include "EditorStats.hpp"
+#include "MaterialMakerWindow.hpp"
 
 using RPG::EditorManager;
 
@@ -34,6 +35,7 @@ struct EditorManager::Internal {
 	std::shared_ptr<RPG::AssetWindow> assetWindow;
 	std::shared_ptr<RPG::InputHelperWindow> inputHelperWindow;
 	std::shared_ptr<RPG::ConsoleWindow> consoleWindow;
+    std::shared_ptr<RPG::MaterialMakerWindow> materialMakerWindow;
 
 	Internal(const RPG::SDLWindow& window, SDL_GLContext context) : isGameRunning(false) {
 		RPG::Log("EditorManager", "Starting up the editor");
@@ -92,6 +94,9 @@ struct EditorManager::Internal {
 		//Console
 		consoleWindow = std::make_unique<RPG::ConsoleWindow>();
 
+		//Material Maker
+		materialMakerWindow = std::make_unique<RPG::MaterialMakerWindow>();
+
 		mainMenuBarWindow = std::make_unique<RPG::MainMenuBarWindow>();
 		mainMenuBarWindow->AddToggleableEditorWindow({"Scene", sceneWindow->ToggleIsOpen(), sceneWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Game", gameWindow->ToggleIsOpen(), gameWindow->IsOpen()});
@@ -100,6 +105,7 @@ struct EditorManager::Internal {
 		mainMenuBarWindow->AddToggleableEditorWindow({"Assets", assetWindow->ToggleIsOpen(), assetWindow->IsOpen()});
 		mainMenuBarWindow->AddToggleableEditorWindow({"Input Helper", inputHelperWindow->ToggleIsOpen(), inputHelperWindow->IsOpen()});
 		//mainMenuBarWindow->AddToggleableEditorWindow({"Console", consoleWindow->ToggleIsOpen(), consoleWindow->IsOpen()});
+        mainMenuBarWindow->AddToggleableEditorWindow({"Material Maker", materialMakerWindow->ToggleIsOpen(), materialMakerWindow->IsOpen()});
 		mainMenuBarWindow->PlayToggleAction([this]() {
 			isGameRunning = !isGameRunning;
 
@@ -123,6 +129,7 @@ struct EditorManager::Internal {
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(assetWindow));
 		editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(inputHelperWindow));
 		//editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(consoleWindow));
+        editorWindows.push_back(std::shared_ptr<RPG::IEditorWindow>(materialMakerWindow));
 
 		RPG::Log("EditorManager", "Initialization complete");
 	}
@@ -221,6 +228,10 @@ struct EditorManager::Internal {
 	void OnGeneralEventData(SDL_Event event) {
 		ImGui_ImplSDL2_ProcessEvent(&event);
 	}
+
+	void SubmitMaterialMakerFrameBuffer(std::shared_ptr<RPG::FrameBuffer> frameBuffer) {
+		materialMakerWindow->SubmitFramebuffer(frameBuffer);
+	}
 };
 
 EditorManager::EditorManager(const RPG::SDLWindow& window, SDL_GLContext context) : internal(RPG::MakeInternalPointer<Internal>(window, context)) {}
@@ -243,4 +254,8 @@ bool EditorManager::IsGameRunning() {
 
 void EditorManager::OnGeneralEventData(SDL_Event event) {
 	internal->OnGeneralEventData(event);
+}
+
+void RPG::EditorManager::SubmitMaterialMakerFrameBuffer(std::shared_ptr<RPG::FrameBuffer> frameBuffer) {
+	internal->SubmitMaterialMakerFrameBuffer(frameBuffer);
 }
