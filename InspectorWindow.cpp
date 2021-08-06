@@ -197,8 +197,7 @@ struct InspectorWindow::Internal {
 			ImGui::InputText(id.c_str(), &v, ImGuiInputTextFlags_ReadOnly);
 			ImGui::PopStyleColor();
 
-			if (ImGui::IsItemHovered())
-			{
+			if (ImGui::IsItemHovered()) {
 				ImGui::BeginTooltip();
 				ImGui::Text(v.c_str());
 				ImGui::EndTooltip();
