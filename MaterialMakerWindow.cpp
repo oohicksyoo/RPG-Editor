@@ -8,6 +8,7 @@
 #include "payloads/GeneralPayload.hpp"
 #include "EditorStats.hpp"
 #include "../engine/core/Serializer.hpp"
+#include "../engine/core/Assets.hpp"
 
 using RPG::MaterialMakerWindow;
 
@@ -16,6 +17,7 @@ struct MaterialMakerWindow::Internal {
     std::shared_ptr<RPG::Property> property;
     std::string newMaterialName;
     std::shared_ptr<RPG::FrameBuffer> frameBuffer;
+    std::shared_ptr<RPG::Material> material;
 
     Internal() : isOpened(true),
                  property(std::make_unique<RPG::Property>(std::string(""), "Material", "RPG::Resource::String", true, "Material")) {}
@@ -42,7 +44,8 @@ struct MaterialMakerWindow::Internal {
             } else {
                 if (ImGui::Button("Create")) {
                     std::string path = "assets/materials/" + newMaterialName + ".mat";
-                    RPG::Serializer::GetInstance().SaveMaterial(std::make_unique<RPG::Material>(newMaterialName), path);
+                    material = std::make_unique<RPG::Material>(newMaterialName, 0, "default");
+                    RPG::Serializer::GetInstance().SaveMaterial(material, path);
                     newMaterialName = "";
                     //Set and reload the property so we can display the material to the user
                     property->SetProperty(std::string(path));
@@ -54,6 +57,7 @@ struct MaterialMakerWindow::Internal {
             if (ImGui::Button("Unload")) {
                 newMaterialName = "";
                 property->SetProperty(std::string(""));
+                material = nullptr;
             }
 
             //TODO: Render material in a scene
@@ -78,6 +82,7 @@ struct MaterialMakerWindow::Internal {
                     RPG::GeneralPayload p = RPG::EditorStats::GetInstance().GetPayload();
                     RPG::Log("Payload", p.path);
                     property->SetProperty(p.path);
+                    material = std::make_unique<RPG::Material>(RPG::Assets::LoadMaterial(p.path));
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -86,8 +91,20 @@ struct MaterialMakerWindow::Internal {
         ImGui::SameLine();
         ImGui::Text(property->GetName().c_str(), property->GetEditorName().c_str());
 
-        if (hasMaterialLoaded) {
+        if (hasMaterialLoaded && material != nullptr && material->GetName() != "") {
             ImGui::Image((void *) (intptr_t) frameBuffer->GetRenderTextureID(), ImVec2{16 * 10, 9 * 10}, ImVec2{0, 1}, ImVec2{1, 0});
+
+            int renderQueue = material->GetRenderQueue();
+            ImGui::InputInt("Render Queue", &renderQueue);
+            material->SetRenderQueue(renderQueue);
+
+            auto shader = material->GetShader();
+            ImGui::InputText("##MaterialName", &shader);
+            material->SetShader(shader);
+
+            if (ImGui::Button("Save")) {
+                RPG::Serializer::GetInstance().SaveMaterial(material, std::any_cast<std::string>(property->GetProperty()));
+            }
         }
 
         ImGui::End();
