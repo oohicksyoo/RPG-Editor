@@ -167,6 +167,7 @@ struct AssetWindow::Internal {
 		json j = json::object();
 		auto models = json::array();
 		auto textures = json::array();
+		auto materials = json::array();
 		for (auto entry : fs::directory_iterator("assets/models")) {
 			if (entry.path().has_extension() && entry.path().extension().string() != ".obj")
 				continue;
@@ -192,6 +193,22 @@ struct AssetWindow::Internal {
 			textures.push_back(s);
 		}
 		j["Textures"] = textures;
+
+        for (auto entry : fs::directory_iterator("assets/materials")) {
+            if (entry.path().has_extension() && entry.path().extension().string() != ".mat")
+                continue;
+
+            std::string s = entry.path().string();
+            for (int i = 0; i < s.length(); ++i) {
+                if (s[i] == '\\') {
+                    s[i] = '/';
+                }
+            }
+
+            RPG::Content::GetInstance().Load<RPG::Material>(s);
+            materials.push_back(s);
+        }
+        j["Materials"] = materials;
 		RPG::Assets::SaveTextFile(j.dump(), "assets/project/resources.projectasset");
 	}
 };
