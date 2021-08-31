@@ -132,3 +132,7 @@ RPG::Action<>::Func<bool> MaterialMakerWindow::IsOpen() {
 void MaterialMakerWindow::SubmitFramebuffer(std::shared_ptr<RPG::FrameBuffer> frameBuffer) {
     internal->SubmitFramebuffer(frameBuffer);
 }
+
+std::shared_ptr<RPG::Material> MaterialMakerWindow::GetCurrentMaterial() {
+    return internal->material;
+}

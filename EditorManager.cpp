@@ -259,3 +259,7 @@ void EditorManager::OnGeneralEventData(SDL_Event event) {
 void RPG::EditorManager::SubmitMaterialMakerFrameBuffer(std::shared_ptr<RPG::FrameBuffer> frameBuffer) {
 	internal->SubmitMaterialMakerFrameBuffer(frameBuffer);
 }
+
+std::shared_ptr<RPG::Material> RPG::EditorManager::GetCurrentMaterial() {
+    return internal->materialMakerWindow->GetCurrentMaterial();
+}

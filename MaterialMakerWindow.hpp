@@ -19,6 +19,7 @@ namespace RPG {
             RPG::Action<>::Callback ToggleIsOpen() override;
             RPG::Action<>::Func<bool> IsOpen() override;
             void SubmitFramebuffer(std::shared_ptr<RPG::FrameBuffer> frameBuffer);
+            std::shared_ptr<RPG::Material> GetCurrentMaterial();
 
         private:
             struct Internal;
