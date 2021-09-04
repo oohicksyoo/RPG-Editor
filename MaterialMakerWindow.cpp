@@ -3,12 +3,15 @@
 //
 
 #include "MaterialMakerWindow.hpp"
+#include "nlohmann/json.hpp"
 #include "../engine/core/components/MeshComponent.hpp"
 #include "../engine/core/Property.hpp"
 #include "payloads/GeneralPayload.hpp"
 #include "EditorStats.hpp"
 #include "../engine/core/Serializer.hpp"
 #include "../engine/core/Assets.hpp"
+
+using json = nlohmann::json;
 
 using RPG::MaterialMakerWindow;
 
@@ -18,6 +21,7 @@ struct MaterialMakerWindow::Internal {
     std::string newMaterialName;
     std::shared_ptr<RPG::FrameBuffer> frameBuffer;
     std::shared_ptr<RPG::Material> material;
+    std::vector<std::shared_ptr<RPG::Property>> properties;
 
     Internal() : isOpened(true),
                  property(std::make_unique<RPG::Property>(std::string(""), "Material", "RPG::Resource::String", true, "Material")) {}
@@ -58,6 +62,7 @@ struct MaterialMakerWindow::Internal {
                 newMaterialName = "";
                 property->SetProperty(std::string(""));
                 material = nullptr;
+                properties.clear();
             }
 
             //TODO: Render material in a scene
@@ -83,6 +88,11 @@ struct MaterialMakerWindow::Internal {
                     RPG::Log("Payload", p.path);
                     property->SetProperty(p.path);
                     material = std::make_unique<RPG::Material>(RPG::Assets::LoadMaterial(p.path));
+                    properties = material->GetProperties();
+                    //Save this for when we actually change the Shader file
+                    /*//Load Shader Definition file
+                    auto shaderDefinitionFile = RPG::Assets::LoadTextFile("assets/shaders/definitions/" + material->GetShader() + ".shader");
+                    GrabProperties(shaderDefinitionFile);*/
                 }
                 ImGui::EndDragDropTarget();
             }
@@ -102,12 +112,34 @@ struct MaterialMakerWindow::Internal {
             ImGui::InputText("##MaterialName", &shader);
             material->SetShader(shader);
 
+            if (properties.size() > 0) {
+                if (ImGui::CollapsingHeader("Properties", true)) {
+                    for (auto p : properties) {
+                        std::any prop = p->GetProperty();
+                        glm::vec4 v = std::any_cast<glm::vec4>(prop);
+                        if (ImGui::ColorPicker4(p->GetEditorName().c_str(), (float *) &v, 0.05f)) {
+                            p->SetProperty(v);
+                        }
+                    }
+                }
+            }
+            ImGui::Spacing();
+
             if (ImGui::Button("Save")) {
+                material->SetProperties(properties);
                 RPG::Serializer::GetInstance().SaveMaterial(material, std::any_cast<std::string>(property->GetProperty()));
             }
         }
 
         ImGui::End();
+    }
+
+    void GrabProperties(std::string data) {
+        properties.clear();
+        json j = json::parse(data);
+        for (auto [key, value] : j["Properties"].items()) {
+            properties.push_back(RPG::Assets::LoadProperty(value));
+        }
     }
 };
 
