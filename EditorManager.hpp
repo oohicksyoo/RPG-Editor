@@ -9,10 +9,13 @@
 #include "../engine/core/FrameBuffer.hpp"
 #include "../engine/core/Hierarchy.hpp"
 
+//TODO: Maybe in the future denote a second constructor and flow for a vulkan editor
+#include "../engine/application/opengl/OpenGLAssetManager.hpp"
+
 namespace RPG {
 	struct EditorManager {
 		public:
-			EditorManager(const RPG::SDLWindow& window, SDL_GLContext context);
+			EditorManager(const RPG::SDLWindow& window, SDL_GLContext context, std::shared_ptr<RPG::OpenGLAssetManager> assetManager);
 			void NewFrame(const RPG::SDLWindow& window);
 			void BuildGUI(std::shared_ptr<RPG::FrameBuffer> frameBuffer, std::shared_ptr<RPG::FrameBuffer> gameFrameBuffer, std::shared_ptr<RPG::Hierarchy> hierarchy);
 			void Render();

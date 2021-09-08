@@ -26,6 +26,7 @@ using RPG::EditorManager;
 
 struct EditorManager::Internal {
 	bool isGameRunning;
+    std::shared_ptr<RPG::OpenGLAssetManager> assetManager;
 	std::vector<std::shared_ptr<RPG::IEditorWindow>> editorWindows;
 	std::shared_ptr<RPG::MainMenuBarWindow> mainMenuBarWindow;
 	std::shared_ptr<RPG::SceneWindow> sceneWindow;
@@ -37,7 +38,7 @@ struct EditorManager::Internal {
 	std::shared_ptr<RPG::ConsoleWindow> consoleWindow;
     std::shared_ptr<RPG::MaterialMakerWindow> materialMakerWindow;
 
-	Internal(const RPG::SDLWindow& window, SDL_GLContext context) : isGameRunning(false) {
+	Internal(const RPG::SDLWindow& window, SDL_GLContext context, std::shared_ptr<RPG::OpenGLAssetManager> assetManager) : isGameRunning(false), assetManager(assetManager) {
 		RPG::Log("EditorManager", "Starting up the editor");
 		Initialize(window, context);
 	}
@@ -95,7 +96,7 @@ struct EditorManager::Internal {
 		consoleWindow = std::make_unique<RPG::ConsoleWindow>();
 
 		//Material Maker
-		materialMakerWindow = std::make_unique<RPG::MaterialMakerWindow>();
+		materialMakerWindow = std::make_unique<RPG::MaterialMakerWindow>(assetManager);
 
 		mainMenuBarWindow = std::make_unique<RPG::MainMenuBarWindow>();
 		mainMenuBarWindow->AddToggleableEditorWindow({"Scene", sceneWindow->ToggleIsOpen(), sceneWindow->IsOpen()});
@@ -234,7 +235,7 @@ struct EditorManager::Internal {
 	}
 };
 
-EditorManager::EditorManager(const RPG::SDLWindow& window, SDL_GLContext context) : internal(RPG::MakeInternalPointer<Internal>(window, context)) {}
+EditorManager::EditorManager(const RPG::SDLWindow& window, SDL_GLContext context, std::shared_ptr<RPG::OpenGLAssetManager> assetManager) : internal(RPG::MakeInternalPointer<Internal>(window, context, assetManager)) {}
 
 void EditorManager::NewFrame(const RPG::SDLWindow& window) {
 	internal->NewFrame(window);
