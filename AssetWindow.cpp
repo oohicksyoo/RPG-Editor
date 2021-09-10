@@ -14,6 +14,7 @@
 #include "payloads/ModelPayload.hpp"
 #include "payloads/GeneralPayload.hpp"
 #include "EditorStats.hpp"
+#include "../engine/core/Serializer.hpp"
 
 using RPG::AssetWindow;
 using json = nlohmann::json;
@@ -209,7 +210,7 @@ struct AssetWindow::Internal {
             materials.push_back(s);
         }
         j["Materials"] = materials;
-		RPG::Assets::SaveTextFile(j.dump(), "assets/project/resources.projectasset");
+		RPG::Assets::SaveTextFile(j.dump(RPG::Serializer::jsonSpacing), "assets/project/resources.projectasset");
 	}
 };
 
