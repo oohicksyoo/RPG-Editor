@@ -73,6 +73,12 @@ struct EditorManager::Internal {
 
 		//Setup Base windows
 		sceneWindow = std::make_unique<RPG::SceneWindow>();
+		sceneWindow->SelectedGameObjectAction([this](std::shared_ptr<RPG::GameObject> gameObject) {
+            RPG::EditorStats::GetInstance().SetSelectedGameObject(gameObject);
+            inspectorWindow->SetSelectedGameObject(gameObject);
+            sceneWindow->SetSelectedGameObject(gameObject);
+            hierarchyWindow->SetSelectedGameObject(gameObject);
+		});
 		gameWindow = std::make_unique<RPG::GameWindow>();
 
 		//Setup Inspector Window
@@ -84,6 +90,7 @@ struct EditorManager::Internal {
 			RPG::EditorStats::GetInstance().SetSelectedGameObject(gameObject);
 			inspectorWindow->SetSelectedGameObject(gameObject);
 			sceneWindow->SetSelectedGameObject(gameObject);
+            hierarchyWindow->SetSelectedGameObject(gameObject);
 		});
 
 		//Setup AssetWindow
@@ -255,6 +262,10 @@ bool EditorManager::IsGameRunning() {
 
 void EditorManager::OnGeneralEventData(SDL_Event event) {
 	internal->OnGeneralEventData(event);
+}
+
+void EditorManager::SetSelectedInspectorGameObject(std::shared_ptr<RPG::GameObject> gameObject) {
+    internal->inspectorWindow->SetSelectedGameObject(gameObject);
 }
 
 void RPG::EditorManager::SubmitMaterialMakerFrameBuffer(std::shared_ptr<RPG::FrameBuffer> frameBuffer) {

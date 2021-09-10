@@ -12,6 +12,7 @@
 #include "payloads/ModelPayload.hpp"
 #include "payloads/GeneralPayload.hpp"
 #include "../engine/core/Input/InputManager.hpp"
+#include "EditorManager.hpp"
 
 using RPG::SceneWindow;
 
@@ -20,6 +21,7 @@ struct SceneWindow::Internal {
 	bool isOpened = true;
 	glm::mat4 identity;
 	std::shared_ptr<RPG::GameObject> selectedGameObject;
+    RPG::Action<std::shared_ptr<RPG::GameObject>> selectedGameObjectAction = {};
 
 
 	Internal() : identity(glm::mat4{1.0f}),
@@ -105,6 +107,11 @@ struct SceneWindow::Internal {
 				RPG::GeneralPayload p = RPG::EditorStats::GetInstance().GetPayload();
 				RPG::Log("Payload", p.path);
 				RPG::SceneManager::GetInstance().LoadScene(p.path);
+				//Set the current inspector selected back to null
+				selectedGameObject = nullptr;
+                if (selectedGameObjectAction.GetListenerCount() > 0) {
+                    selectedGameObjectAction.Invoke(nullptr);
+                }
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -162,4 +169,8 @@ void SceneWindow::SetFrameBuffer(uint32_t frameBufferID) {
 
 void SceneWindow::SetSelectedGameObject(std::shared_ptr<RPG::GameObject> gameObject) {
 	internal->selectedGameObject = gameObject;
+}
+
+void SceneWindow::SelectedGameObjectAction(RPG::Action<std::shared_ptr<RPG::GameObject>>::Callback callback) {
+    internal->selectedGameObjectAction += callback;
 }

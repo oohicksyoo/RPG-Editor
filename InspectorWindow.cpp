@@ -160,6 +160,7 @@ struct InspectorWindow::Internal {
 			}
 
 			selectedGameObject->SetParent(selectedGameObject, nullptr); //Clear my parent relation ship; deleting children as well
+			selectedGameObject = nullptr;
 			//TODO: Currently if anyone has a reference to the pointer it doesnt get shut down right away
 			//Deleting a child for example with release at the end of the application and not right away
 			//If all children are removed then the main parent will be cleaned  up at the end of application

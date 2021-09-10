@@ -163,6 +163,11 @@ void HierarchyWindow::SetHierarchy(std::shared_ptr<RPG::Hierarchy> hierarchy) {
 	internal->hierarchy = hierarchy;
 }
 
+void HierarchyWindow::SetSelectedGameObject(std::shared_ptr<RPG::GameObject> gameObject) {
+    internal->selectedGameObject = gameObject;
+    internal->selectedGuid = gameObject == nullptr ? "" : gameObject->GetGuid();;
+}
+
 void HierarchyWindow::SelectedGameObjectAction(RPG::Action<std::shared_ptr<RPG::GameObject>>::Callback callback) {
 	internal->selectedGameObjectAction += callback;
 }

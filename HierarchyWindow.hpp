@@ -18,6 +18,7 @@ namespace RPG {
 			RPG::Action<>::Callback ToggleIsOpen() override;
 			RPG::Action<>::Func<bool> IsOpen() override;
 			void SetHierarchy(std::shared_ptr<RPG::Hierarchy> hierarchy);
+            void SetSelectedGameObject(std::shared_ptr<RPG::GameObject> gameObject = nullptr);
 			void SelectedGameObjectAction(RPG::Action<std::shared_ptr<RPG::GameObject>>::Callback callback);
 
 		private:

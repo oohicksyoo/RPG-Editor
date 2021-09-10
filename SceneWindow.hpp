@@ -20,6 +20,7 @@ namespace RPG {
 			RPG::Action<>::Func<bool> IsOpen() override;
 			void SetFrameBuffer(uint32_t frameBufferID);
 			void SetSelectedGameObject(std::shared_ptr<RPG::GameObject> gameObject = nullptr);
+            void SelectedGameObjectAction(RPG::Action<std::shared_ptr<RPG::GameObject>>::Callback callback);
 
 		private:
 			struct Internal;

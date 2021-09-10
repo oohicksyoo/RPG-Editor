@@ -21,6 +21,7 @@ namespace RPG {
 			void Render();
 			bool IsGameRunning();
 			void OnGeneralEventData(SDL_Event event);
+			void SetSelectedInspectorGameObject(std::shared_ptr<RPG::GameObject> gameObject = nullptr);
 			void SubmitMaterialMakerFrameBuffer(std::shared_ptr<RPG::FrameBuffer> frameBuffer);
 			std::shared_ptr<RPG::Material> GetCurrentMaterial();
 
